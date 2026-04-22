@@ -1,0 +1,114 @@
+import {
+    User as FirebaseUser,
+    UserCredential,
+    createUserWithEmailAndPassword,
+    onAuthStateChanged,
+    sendPasswordResetEmail,
+    signInWithEmailAndPassword,
+    signOut,
+    updateProfile
+} from 'firebase/auth';
+
+import i18n from '../i18n/i18n';
+import { auth } from './FirebaseConfig';
+
+import type { UserRole } from '../models/User';
+
+export interface RegisterData {
+  email: string;
+  password: string;
+  name?: string;
+  role?: UserRole;
+}
+
+export interface LoginData {
+  email: string;
+  password: string;
+}
+
+class AuthService {
+
+    async register({ email, password, name, role = 'user' }: RegisterData): Promise<UserCredential> {
+        try {
+            const UserCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const FirebaseUser = UserCredential.user;
+
+            if (name) {
+                await updateProfile(FirebaseUser, { displayName: name });
+            }
+
+            return UserCredential
+        } catch (error: any) {
+            this.handleAuthError(error);
+            throw error;
+        }
+    }
+
+    async login({ email, password }: LoginData): Promise<UserCredential> {
+        try {
+            return await signInWithEmailAndPassword(auth, email, password);
+        } catch (error: any) {
+            this.handleAuthError(error);
+            throw error;
+        }
+    }
+
+    async logout(): Promise<void> {
+        await signOut(auth);
+    }
+
+    async resetPassword(email: string): Promise<void> {
+        await sendPasswordResetEmail(auth, email);
+    }
+
+    getCurrentFirebaseUser(): FirebaseUser | null {
+        return auth.currentUser;
+    }
+
+    onAuthStateChange(callback: (firebaseUser: FirebaseUser | null) => void): () => void {
+        return onAuthStateChanged(auth, callback);
+    }
+
+    async updateUserProfile(profile: { name?: string; photoURL?: string }): Promise<void> {
+        const user = auth.currentUser;
+        if (!user) {
+            throw new Error('Użytkownik nie jest zalogowany');
+        }
+        
+        await updateProfile(user, {
+            displayName: profile.name,
+            photoURL: profile.photoURL,
+        });
+    }
+
+    private handleAuthError(error: any): void {
+        let message: string = 'An unexpected error occurred';
+
+        switch (error.code) {
+        case 'auth/email-already-in-use':
+            message = i18n.t('auth.errors.emailAlreadyInUse');
+            break;
+        case 'auth/invalid-email':
+            message = i18n.t('auth.errors.invalidEmail');
+            break;
+        case 'auth/user-not-found':
+        case 'auth/wrong-password':
+            message = i18n.t('auth.errors.userNotFound');
+            break;
+        case 'auth/weak-password':
+            message = i18n.t('auth.errors.weakPassword');
+            break;
+        case 'auth/too-many-requests':
+            message = i18n.t('auth.errors.tooManyRequests');
+            break;
+        default:
+            message = error.message || message;
+    }
+
+    console.error('Firebase Auth Error:', error.code, message);
+    throw new Error(message);
+  }
+}
+
+export const authService = new AuthService();
+export default authService;

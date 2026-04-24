@@ -1,3 +1,5 @@
+import './Location';
+
 export type Offer = {
     userId: string;
     title: string;
@@ -8,4 +10,5 @@ export type Offer = {
     salary: number;
     tags: string;
     remote: boolean;
+    location: Location | null;
 }

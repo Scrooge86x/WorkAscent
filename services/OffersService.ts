@@ -31,6 +31,7 @@ const mapDocToOffer = (doc: QueryDocumentSnapshot): Offer => {
         salary: data.salary,
         tags: data.tags,
         remote: data.remote,
+        location: data.location,
     }
 };
 
@@ -44,9 +45,10 @@ export type GetOffersOptions = {
 };
 
 class OffersService {
+    private offersCollection = collection(db, OFFERS_COLLECTION);
 
     async addOffer(offer: Omit<Offer, 'userId'> & { userId: string }): Promise<string> {
-        const docRef = await addDoc(collection(db, OFFERS_COLLECTION), {
+        const docRef = await addDoc(this.offersCollection, {
             ...offer,
             createdAt: new Date().toISOString(),
         });
@@ -54,7 +56,7 @@ class OffersService {
     }
 
     async getOffer(offerId: string): Promise<Offer | null> {
-        const docSnap = await getDoc(doc(db, OFFERS_COLLECTION, offerId));
+        const docSnap = await getDoc(doc(this.offersCollection, offerId));
         return docSnap.exists() ? mapDocToOffer(docSnap) : null;
     }
 
@@ -72,7 +74,7 @@ class OffersService {
         constraints.push(orderBy(options?.sortBy || 'createdAt', options?.sortOrder || 'desc'));
         if (options?.maxResults) constraints.push(limit(options?.maxResults));
 
-        const snapshot = await getDocs(query(collection(db, OFFERS_COLLECTION), ...constraints));
+        const snapshot = await getDocs(query(this.offersCollection, ...constraints));
         return snapshot.docs.map(mapDocToOffer);
     }
 }

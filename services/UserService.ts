@@ -1,8 +1,8 @@
 import {
-    addDoc,
     collection,
     doc,
-    getDoc
+    getDoc,
+    setDoc
 } from 'firebase/firestore';
 import { db } from './FirebaseConfig';
 
@@ -13,9 +13,8 @@ const USERS_COLLECTION = 'users';
 class UserService {
     private usersCollection = collection(db, USERS_COLLECTION);
 
-    async addUser(user: User): Promise<string> {
-        const docRef = await addDoc(this.usersCollection, user);
-        return docRef.id;
+    async addUser(user: User): Promise<void> {
+        await setDoc(doc(this.usersCollection, user.userId), user);
     }
 
     async getUser(userId: string): Promise<User | null> {

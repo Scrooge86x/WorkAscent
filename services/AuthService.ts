@@ -12,13 +12,14 @@ import {
 import i18n from '../i18n/i18n';
 import { auth } from './FirebaseConfig';
 
-import type { UserRole } from '../models/User';
+import type { User, UserRole } from '../models/User';
+import { userService } from './UserService';
 
 export interface RegisterData {
   email: string;
   password: string;
-  name?: string;
-  role?: UserRole;
+  name: string;
+  role: UserRole;
 }
 
 export interface LoginData {
@@ -29,16 +30,34 @@ export interface LoginData {
 class AuthService {
 
     async register({ email, password, name, role = 'user' }: RegisterData): Promise<UserCredential> {
+        let firebaseUser: FirebaseUser | null = null;
+
         try {
-            const UserCredential = await createUserWithEmailAndPassword(auth, email, password);
-            const FirebaseUser = UserCredential.user;
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            firebaseUser = userCredential.user;
 
             if (name) {
-                await updateProfile(FirebaseUser, { displayName: name });
+                await updateProfile(firebaseUser, { displayName: name });
             }
 
-            return UserCredential
+            const userData: User = {
+                userId: firebaseUser.uid,
+                name: name,
+                email: email,
+                role: role,
+            };
+
+            await userService.addUser(userData);
+
+            return userCredential;
         } catch (error: any) {
+            if (firebaseUser) {
+                try {
+                    await firebaseUser.delete();
+                } catch (deleteError) {
+                    this.handleAuthError('rollbackError');
+                }
+            }
             this.handleAuthError(error);
             throw error;
         }
@@ -69,15 +88,14 @@ class AuthService {
         return onAuthStateChanged(auth, callback);
     }
 
-    async updateUserProfile(profile: { name?: string; photoURL?: string }): Promise<void> {
+    async updateUserProfile(profile: { name: string }): Promise<void> {
         const user = auth.currentUser;
         if (!user) {
             throw new Error('Użytkownik nie jest zalogowany');
         }
         
         await updateProfile(user, {
-            displayName: profile.name,
-            photoURL: profile.photoURL,
+            displayName: profile.name
         });
     }
 
@@ -101,9 +119,12 @@ class AuthService {
         case 'auth/too-many-requests':
             message = i18n.t('auth.errors.tooManyRequests');
             break;
+        case 'rollbackError':
+            message = i18n.t('auth.errors.rollbackError');
+            break;
         default:
             message = error.message || message;
-    }
+        }
 
     console.error('Firebase Auth Error:', error.code, message);
     throw new Error(message);

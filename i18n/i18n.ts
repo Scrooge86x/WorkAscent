@@ -14,6 +14,7 @@ const resources = {
                     tooManyRequests: 'Too many login attempts. Try again later',
                     unexpected: 'An unexpected error occurred',
                     notLoggedIn: 'User is not logged in',
+                    rollbackError: 'An error occured while rollbacking user creation.',
                 }
             },
         },
@@ -30,6 +31,7 @@ const resources = {
                     tooManyRequests: 'Zbyt wiele prób logowania. Spróbuj ponownie za chwilę',
                     unexpected: 'Wystąpił nieoczekiwany błąd',
                     notLoggedIn: 'Użytkownik nie jest zalogowany',
+                    rollbackError: 'Wystąpił błąd podczas cofania tworzenia użytkownika.',
                 }
             }
         }

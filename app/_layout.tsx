@@ -1,3 +1,4 @@
+import { useThemeStore } from "@/store/useThemeStore";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useColorScheme } from "react-native";
@@ -5,8 +6,9 @@ import { MD3DarkTheme, MD3LightTheme, PaperProvider } from "react-native-paper";
 
 export default function RootLayout() {
     const systemColorScheme = useColorScheme();
-    const isDark = systemColorScheme === "dark";
+    const themeMode = useThemeStore((state) => state.themeMode);
 
+    const isDark = themeMode === "auto" ? systemColorScheme === "dark" : themeMode === "dark";
     const paperTheme = isDark ? MD3DarkTheme : MD3LightTheme;
 
     return (
@@ -16,7 +18,7 @@ export default function RootLayout() {
                 <Stack.Screen name="login" options={{ headerShown: true }} />
                 <Stack.Screen name="register" options={{ headerShown: true }} />
             </Stack>
-            <StatusBar />
+            <StatusBar style={isDark ? "light" : "dark"} />
         </PaperProvider>
     );
 }

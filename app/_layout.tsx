@@ -1,3 +1,4 @@
+import { AppHeader } from "@/components/AppHeader";
 import { useThemeStore } from "@/store/useThemeStore";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -13,7 +14,11 @@ export default function RootLayout() {
 
     return (
         <PaperProvider theme={paperTheme}>
-            <Stack>
+            <Stack
+                screenOptions={{
+                    header: (props) => <AppHeader {...props} />,
+                }}
+            >
                 <Stack.Screen name="index" options={{ headerShown: true }} />
                 <Stack.Screen name="login" options={{ headerShown: true }} />
                 <Stack.Screen name="register" options={{ headerShown: true }} />

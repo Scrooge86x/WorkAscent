@@ -1,14 +1,9 @@
-import {
-    collection,
-    doc,
-    getDoc,
-    setDoc
-} from 'firebase/firestore';
-import { db } from './FirebaseConfig';
+import { collection, doc, getDoc, setDoc } from "firebase/firestore";
+import { db } from "./FirebaseConfig";
 
-import type { User } from '../models/User';
+import type { User } from "../models/User";
 
-const USERS_COLLECTION = 'users';
+const USERS_COLLECTION = "users";
 
 class UserService {
     private usersCollection = collection(db, USERS_COLLECTION);

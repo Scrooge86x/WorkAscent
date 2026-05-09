@@ -6,30 +6,34 @@ import {
     sendPasswordResetEmail,
     signInWithEmailAndPassword,
     signOut,
-    updateProfile
-} from 'firebase/auth';
+    updateProfile,
+} from "firebase/auth";
 
-import i18n from '../i18n/i18n';
-import { auth } from './FirebaseConfig';
+import i18n from "../i18n/i18n";
+import { auth } from "./FirebaseConfig";
 
-import type { User, UserRole } from '../models/User';
-import { userService } from './UserService';
+import type { User, UserRole } from "../models/User";
+import { userService } from "./UserService";
 
 export interface RegisterData {
-  email: string;
-  password: string;
-  name: string;
-  role: UserRole;
+    email: string;
+    password: string;
+    name: string;
+    role: UserRole;
 }
 
 export interface LoginData {
-  email: string;
-  password: string;
+    email: string;
+    password: string;
 }
 
 class AuthService {
-
-    async register({ email, password, name, role = 'user' }: RegisterData): Promise<UserCredential> {
+    async register({
+        email,
+        password,
+        name,
+        role = "user",
+    }: RegisterData): Promise<UserCredential> {
         let firebaseUser: FirebaseUser | null = null;
 
         try {
@@ -55,7 +59,7 @@ class AuthService {
                 try {
                     await firebaseUser.delete();
                 } catch (deleteError) {
-                    this.handleAuthError('rollbackError');
+                    this.handleAuthError("rollbackError");
                 }
             }
             this.handleAuthError(error);
@@ -91,44 +95,44 @@ class AuthService {
     async updateUserProfile(profile: { name: string }): Promise<void> {
         const user = auth.currentUser;
         if (!user) {
-            throw new Error('Użytkownik nie jest zalogowany');
+            throw new Error("Użytkownik nie jest zalogowany");
         }
-        
+
         await updateProfile(user, {
-            displayName: profile.name
+            displayName: profile.name,
         });
     }
 
     private handleAuthError(error: any): void {
-        let message: string = 'An unexpected error occurred';
+        let message: string = "An unexpected error occurred";
 
         switch (error.code) {
-        case 'auth/email-already-in-use':
-            message = i18n.t('auth.errors.emailAlreadyInUse');
-            break;
-        case 'auth/invalid-email':
-            message = i18n.t('auth.errors.invalidEmail');
-            break;
-        case 'auth/user-not-found':
-        case 'auth/wrong-password':
-            message = i18n.t('auth.errors.userNotFound');
-            break;
-        case 'auth/weak-password':
-            message = i18n.t('auth.errors.weakPassword');
-            break;
-        case 'auth/too-many-requests':
-            message = i18n.t('auth.errors.tooManyRequests');
-            break;
-        case 'rollbackError':
-            message = i18n.t('auth.errors.rollbackError');
-            break;
-        default:
-            message = error.message || message;
+            case "auth/email-already-in-use":
+                message = i18n.t("auth.errors.emailAlreadyInUse");
+                break;
+            case "auth/invalid-email":
+                message = i18n.t("auth.errors.invalidEmail");
+                break;
+            case "auth/user-not-found":
+            case "auth/wrong-password":
+                message = i18n.t("auth.errors.userNotFound");
+                break;
+            case "auth/weak-password":
+                message = i18n.t("auth.errors.weakPassword");
+                break;
+            case "auth/too-many-requests":
+                message = i18n.t("auth.errors.tooManyRequests");
+                break;
+            case "rollbackError":
+                message = i18n.t("auth.errors.rollbackError");
+                break;
+            default:
+                message = error.message || message;
         }
 
-    console.error('Firebase Auth Error:', error.code, message);
-    throw new Error(message);
-  }
+        console.error("Firebase Auth Error:", error.code, message);
+        throw new Error(message);
+    }
 }
 
 export const authService = new AuthService();

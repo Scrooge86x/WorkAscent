@@ -1,4 +1,4 @@
-import type { Location } from './Location';
+import type { Location } from "./Location";
 
 export type Offer = {
     userId: string;
@@ -11,4 +11,4 @@ export type Offer = {
     tags: string;
     remote: boolean;
     location: Location | null;
-}
+};

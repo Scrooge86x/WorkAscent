@@ -8,14 +8,14 @@ import {
     orderBy,
     query,
     QueryDocumentSnapshot,
-    where
-} from 'firebase/firestore';
-import type { Offer } from '../models/Offer';
-import { db } from './FirebaseConfig';
+    where,
+} from "firebase/firestore";
+import type { Offer } from "../models/Offer";
+import { db } from "./FirebaseConfig";
 
-const OFFERS_COLLECTION = 'offers';
+const OFFERS_COLLECTION = "offers";
 
-type FirestoreOffer = Omit<Offer, 'id'> & {
+type FirestoreOffer = Omit<Offer, "id"> & {
     createdAt: string;
 };
 
@@ -32,7 +32,7 @@ const mapDocToOffer = (doc: QueryDocumentSnapshot): Offer => {
         tags: data.tags,
         remote: data.remote,
         location: data.location,
-    }
+    };
 };
 
 export type GetOffersOptions = {
@@ -40,14 +40,14 @@ export type GetOffersOptions = {
     remote?: boolean;
     tags?: string;
     maxResults?: number;
-    sortBy?: 'createdAt' | 'salary' | 'title';
-    sortOrder?: 'asc' | 'desc';
+    sortBy?: "createdAt" | "salary" | "title";
+    sortOrder?: "asc" | "desc";
 };
 
 class OffersService {
     private offersCollection = collection(db, OFFERS_COLLECTION);
 
-    async addOffer(offer: Omit<Offer, 'userId'> & { userId: string }): Promise<string> {
+    async addOffer(offer: Omit<Offer, "userId"> & { userId: string }): Promise<string> {
         const docRef = await addDoc(this.offersCollection, {
             ...offer,
             createdAt: new Date().toISOString(),
@@ -63,15 +63,15 @@ class OffersService {
     async getOffers(options?: GetOffersOptions): Promise<Offer[]> {
         const constraints = [];
 
-        if (options?.userId) constraints.push(where('userId', '==', options.userId));
-        if (options?.remote !== undefined) constraints.push(where('remote', '==', options.remote));
-        
+        if (options?.userId) constraints.push(where("userId", "==", options.userId));
+        if (options?.remote !== undefined) constraints.push(where("remote", "==", options.remote));
+
         if (options?.tags) {
-            constraints.push(where('tags', '>=', options.tags));
-            constraints.push(where('tags', '<=', options.tags + '\uf8ff'));
+            constraints.push(where("tags", ">=", options.tags));
+            constraints.push(where("tags", "<=", options.tags + "\uf8ff"));
         }
 
-        constraints.push(orderBy(options?.sortBy || 'createdAt', options?.sortOrder || 'desc'));
+        constraints.push(orderBy(options?.sortBy || "createdAt", options?.sortOrder || "desc"));
         if (options?.maxResults) constraints.push(limit(options?.maxResults));
 
         const snapshot = await getDocs(query(this.offersCollection, ...constraints));

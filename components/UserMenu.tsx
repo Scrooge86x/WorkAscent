@@ -1,6 +1,8 @@
 import { authService } from "@/services/AuthService";
+import { auth } from "@/services/FirebaseConfig";
 import { useRouter } from "expo-router";
 import { useState } from "react";
+import { useAuthState } from "react-firebase-hooks/auth";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import { Divider, IconButton, Menu, Text, useTheme } from "react-native-paper";
@@ -11,7 +13,7 @@ export const UserMenu = () => {
     const theme = useTheme();
     const { t } = useTranslation();
 
-    const user = authService.getCurrentFirebaseUser();
+    const [user] = useAuthState(auth);
     const isLoggedIn = !!user;
 
     const openMenu = () => setVisible(true);

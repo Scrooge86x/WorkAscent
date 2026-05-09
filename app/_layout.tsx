@@ -19,7 +19,13 @@ export default function RootLayout() {
                     header: (props) => <AppHeader {...props} />,
                 }}
             >
-                <Stack.Screen name="index" options={{ headerShown: true }} />
+                <Stack.Screen
+                    name="index"
+                    options={{
+                        headerShown: true,
+                        headerBackVisible: false,
+                    }}
+                />
                 <Stack.Screen name="login" options={{ headerShown: true }} />
                 <Stack.Screen name="register" options={{ headerShown: true }} />
             </Stack>

@@ -1,11 +1,10 @@
-import { getHeaderTitle } from "@react-navigation/elements";
 import { View } from "react-native";
 import { Appbar, useTheme } from "react-native-paper";
 import { UserMenu } from "./UserMenu";
 
 export const AppHeader = ({ navigation, route, options, back }: any) => {
     const theme = useTheme();
-    const title = getHeaderTitle(options, route.name);
+    const showBackButton = options.headerBackVisible !== false;
 
     return (
         <Appbar.Header
@@ -15,7 +14,7 @@ export const AppHeader = ({ navigation, route, options, back }: any) => {
             <View style={{ width: 50, alignItems: "flex-start" }}>
                 {options.headerLeft ? (
                     options.headerLeft()
-                ) : back ? (
+                ) : back && showBackButton ? (
                     <Appbar.BackAction onPress={navigation.goBack} />
                 ) : null}
             </View>

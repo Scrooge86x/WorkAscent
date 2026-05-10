@@ -8,7 +8,6 @@ import { useTranslation } from "react-i18next";
 import { StyleSheet, View } from "react-native";
 import { Text, useTheme } from "react-native-paper";
 
-
 export default function HomeScreen() {
     const theme = useTheme();
     const { t } = useTranslation();

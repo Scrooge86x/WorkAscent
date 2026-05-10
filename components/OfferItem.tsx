@@ -1,9 +1,8 @@
-import { Offer } from '@/models/Offer';
+import { Offer } from "@/models/Offer";
 import { useRouter } from "expo-router";
-import { memo, useMemo } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { memo, useMemo } from "react";
+import { Pressable, StyleSheet, View } from "react-native";
 import { Divider, Text, useTheme } from "react-native-paper";
-
 
 interface OfferItemProps {
     item: Offer;
@@ -16,20 +15,31 @@ export const OfferItem = memo(({ item }: OfferItemProps) => {
 
     const handlePress = () => {
         router.push({
-            pathname: '/offer-details'
+            pathname: "/offer-details",
         });
     };
 
-    const locationDisplay = item.remote ? "Remote" : `${item.location?.city}, ${item.location?.region}, ${item.location?.country}`;
+    const locationDisplay = item.remote
+        ? "Remote"
+        : `${item.location?.city}, ${item.location?.region}, ${item.location?.country}`;
 
     return (
         <Pressable onPress={handlePress}>
             <View style={styles.card}>
-                <Text variant="headlineSmall" style={styles.title}>{item.title}</Text>
-                <Text variant="bodyMedium" style={styles.info}>{`${item.salary}zł • ${item.tags}`}</Text>
-                <Text variant="bodyMedium" style={styles.subtitleInfo}>{item.companyName}</Text>
-                <Text variant="bodyMedium" style={styles.subtitleInfo}>{locationDisplay}</Text>
-                <Divider bold={true} style={styles.separator}/>
+                <Text variant="headlineSmall" style={styles.title}>
+                    {item.title}
+                </Text>
+                <Text
+                    variant="bodyMedium"
+                    style={styles.info}
+                >{`${item.salary}zł • ${item.tags}`}</Text>
+                <Text variant="bodyMedium" style={styles.subtitleInfo}>
+                    {item.companyName}
+                </Text>
+                <Text variant="bodyMedium" style={styles.subtitleInfo}>
+                    {locationDisplay}
+                </Text>
+                <Divider bold={true} style={styles.separator} />
             </View>
         </Pressable>
     );

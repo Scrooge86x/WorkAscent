@@ -16,6 +16,9 @@ export const OfferItem = memo(({ item }: OfferItemProps) => {
     const handlePress = () => {
         router.push({
             pathname: "/offer-details",
+            params: {
+                id: item.id,
+            },
         });
     };
 

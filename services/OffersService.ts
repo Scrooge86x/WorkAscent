@@ -23,6 +23,7 @@ const mapDocToOffer = (doc: QueryDocumentSnapshot): Offer => {
     const data = doc.data() as FirestoreOffer;
     return {
         userId: data.userId,
+        id: doc.id,
         title: data.title,
         companyName: data.companyName,
         description: data.description,

@@ -1,7 +1,9 @@
+import ErrorPopup from "@/components/ErrorPopup";
 import { OfferItem } from "@/components/OfferItem";
 import { Offer } from "@/models/Offer";
 import { offersService } from "@/services/OffersService";
 import { FlashList } from "@shopify/flash-list";
+import * as Network from "expo-network";
 import { Stack } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -14,16 +16,30 @@ export default function HomeScreen() {
 
     const [offers, setOffers] = useState<Offer[]>([]);
     const [refreshing, setRefreshing] = useState(false);
-
     const styles = useMemo(() => createStyles(theme), [theme]);
+
+    const [error, setError] = useState<string | null>(null);
 
     // TODO: Filtracja, sortowanie
     const fetchOffers = useCallback(async () => {
+        setRefreshing(true);
+        const networkStatus = await Network.getNetworkStateAsync();
+
+        if (!networkStatus.isConnected) {
+            setError(t("noConnection", "No internet connection"));
+            setRefreshing(false);
+            return;
+        }
+
         try {
             const offers = await offersService.getOffers();
             setOffers(offers);
+            setError(null);
         } catch (error) {
-            console.error("Error fetching offers:", error);
+            setOffers([]);
+            setError(t("home.fetchError", "Failed to fetch offers"));
+        } finally {
+            setRefreshing(false);
         }
     }, [offers]);
 
@@ -34,13 +50,14 @@ export default function HomeScreen() {
     return (
         <View style={styles.container}>
             <Stack.Screen />
+            <ErrorPopup message={error} />
             <Text variant="bodyMedium" style={styles.subtitleInfo}>
-                {`${t("home.found")} ${offers.length} ${t("home.offers")}`}
+                {`${t("home.found", "Found")} ${offers.length} ${t("home.offers", "offers matching your criteria:")}`}
             </Text>
             <View style={styles.innerContainer}>
                 {offers.length == 0 ? (
                     <Text variant="bodyMedium" style={styles.subtitleInfo}>
-                        {t("home.noOffers")}
+                        {t("home.noOffers", "No offers found.")}
                     </Text>
                 ) : (
                     <FlashList

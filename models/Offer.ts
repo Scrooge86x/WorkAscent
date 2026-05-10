@@ -2,6 +2,7 @@ import type { Location } from "./Location";
 
 export type Offer = {
     userId: string;
+    id: string;
     title: string;
     companyName: string;
     description: string;

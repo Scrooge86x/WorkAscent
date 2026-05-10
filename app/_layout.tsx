@@ -28,6 +28,7 @@ export default function RootLayout() {
                 />
                 <Stack.Screen name="login" options={{ headerShown: true }} />
                 <Stack.Screen name="register" options={{ headerShown: true }} />
+                <Stack.Screen name="offer-details" options={{ headerShown: true }} />
             </Stack>
             <StatusBar style={isDark ? "light" : "dark"} />
         </PaperProvider>

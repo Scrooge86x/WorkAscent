@@ -23,7 +23,6 @@ const mapDocToOffer = (doc: QueryDocumentSnapshot): Offer => {
     const data = doc.data() as FirestoreOffer;
     return {
         userId: data.userId,
-        id: doc.id,
         title: data.title,
         companyName: data.companyName,
         description: data.description,
@@ -61,7 +60,7 @@ class OffersService {
         return docSnap.exists() ? mapDocToOffer(docSnap) : null;
     }
 
-    async getOffers(options?: GetOffersOptions): Promise<Offer[]> {
+    async getOffers(options?: GetOffersOptions): Promise<{ offer: Offer; id: string }[]> {
         const constraints = [];
 
         if (options?.userId) constraints.push(where("userId", "==", options.userId));
@@ -76,7 +75,7 @@ class OffersService {
         if (options?.maxResults) constraints.push(limit(options?.maxResults));
 
         const snapshot = await getDocs(query(this.offersCollection, ...constraints));
-        return snapshot.docs.map(mapDocToOffer);
+        return snapshot.docs.map((doc) => ({ offer: mapDocToOffer(doc), id: doc.id }));
     }
 }
 

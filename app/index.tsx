@@ -1,18 +1,18 @@
 import ErrorPopup from "@/components/ErrorPopup";
 import { OfferItem } from "@/components/OfferItem";
+import { useAppTranslation } from "@/hooks/use-app-translation";
 import { Offer } from "@/models/Offer";
 import { offersService } from "@/services/OffersService";
 import { FlashList } from "@shopify/flash-list";
 import * as Network from "expo-network";
 import { Stack } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { StyleSheet, View } from "react-native";
 import { ActivityIndicator, Text, useTheme } from "react-native-paper";
 
 export default function HomeScreen() {
     const theme = useTheme();
-    const { t } = useTranslation();
+    const { t } = useAppTranslation();
 
     const [offers, setOffers] = useState<{ offer: Offer; id: string }[]>([]);
     const [refreshing, setRefreshing] = useState(true);

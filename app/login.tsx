@@ -1,8 +1,8 @@
+import { useAppTranslation } from "@/hooks/use-app-translation";
 import { authService } from "@/services/AuthService";
 import { Stack, useRouter } from "expo-router";
 import { Formik } from "formik";
 import { useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
 import {
     Keyboard,
     KeyboardAvoidingView,
@@ -17,7 +17,7 @@ import * as Yup from "yup";
 export default function LoginScreen() {
     const router = useRouter();
     const theme = useTheme();
-    const { t } = useTranslation();
+    const { t } = useAppTranslation();
 
     const [showPassword, setShowPassword] = useState(false);
     const [globalError, setGlobalError] = useState("");

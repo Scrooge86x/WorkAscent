@@ -1,4 +1,5 @@
 import { authService } from "@/services/AuthService";
+import { useLanguageStore } from "@/store/useLanguageStore";
 import { useThemeStore } from "@/store/useThemeStore";
 import { Stack, useRouter } from "expo-router";
 import React, { useMemo, useState } from "react";
@@ -25,6 +26,7 @@ export default function SettingsScreen() {
     const router = useRouter();
     const { t, i18n } = useTranslation();
     const { themeMode, setThemeMode } = useThemeStore();
+    const { language, setLanguage } = useLanguageStore();
 
     const user = authService.getCurrentFirebaseUser();
     const isLoggedIn = !!user;
@@ -117,7 +119,7 @@ export default function SettingsScreen() {
                             <React.Fragment key={lang.code}>
                                 <Menu.Item
                                     onPress={() => {
-                                        i18n.changeLanguage(lang.code);
+                                        setLanguage(lang.code);
                                         setLangMenuVisible(false);
                                     }}
                                     title={lang.label}

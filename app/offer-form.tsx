@@ -137,15 +137,16 @@ export default function OfferFormScreen() {
 
             try {
                 if (creatingNewOffer) {
-                    //await offersService.addOffer(newOffer);
+                    await offersService.addOffer(newOffer);
                 } else {
-                    // TODO
+                    await offersService.editOffer(params.id, newOffer);
                 }
                 router.back();
             } catch (error) {
                 setError(t("offerForm.saveError", "Failed to save offer"));
             } finally {
                 setSubmitting(false);
+                router.push("/");
             }
         },
         [creatingNewOffer, params.id, router],

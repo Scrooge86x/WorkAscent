@@ -1,6 +1,7 @@
 import {
     addDoc,
     collection,
+    deleteDoc,
     doc,
     getDoc,
     getDocs,
@@ -8,6 +9,7 @@ import {
     orderBy,
     query,
     QueryDocumentSnapshot,
+    updateDoc,
     where,
 } from "firebase/firestore";
 import type { Offer } from "../models/Offer";
@@ -44,6 +46,10 @@ export type GetOffersOptions = {
     sortOrder?: "asc" | "desc";
 };
 
+export type EditOfferData = Partial<Omit<Offer, "userId">> & {
+    userId?: string;
+};
+
 class OffersService {
     private offersCollection = collection(db, OFFERS_COLLECTION);
 
@@ -76,6 +82,16 @@ class OffersService {
 
         const snapshot = await getDocs(query(this.offersCollection, ...constraints));
         return snapshot.docs.map((doc) => ({ offer: mapDocToOffer(doc), id: doc.id }));
+    }
+
+    async editOffer(offerId: string, updatedData: EditOfferData): Promise<void> {
+        const offerDoc = doc(this.offersCollection, offerId);
+        await updateDoc(offerDoc, updatedData);
+    }
+
+    async deleteOffer(offerId: string): Promise<void> {
+        const offerDoc = doc(this.offersCollection, offerId);
+        await deleteDoc(offerDoc);
     }
 }
 

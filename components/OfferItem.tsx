@@ -6,9 +6,10 @@ import { Divider, Text, useTheme } from "react-native-paper";
 
 interface OfferItemProps {
     item: Offer;
+    id: string;
 }
 
-export const OfferItem = memo(({ item }: OfferItemProps) => {
+export const OfferItem = memo(({ item, id }: OfferItemProps) => {
     const router = useRouter();
     const theme = useTheme();
     const styles = useMemo(() => createStyles(theme), [theme]);
@@ -17,7 +18,7 @@ export const OfferItem = memo(({ item }: OfferItemProps) => {
         router.push({
             pathname: "/offer-details",
             params: {
-                id: item.id,
+                id: id,
             },
         });
     };

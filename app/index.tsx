@@ -8,14 +8,14 @@ import { Stack } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, View } from "react-native";
-import { Text, useTheme } from "react-native-paper";
+import { ActivityIndicator, Text, useTheme } from "react-native-paper";
 
 export default function HomeScreen() {
     const theme = useTheme();
     const { t } = useTranslation();
 
-    const [offers, setOffers] = useState<Offer[]>([]);
-    const [refreshing, setRefreshing] = useState(false);
+    const [offers, setOffers] = useState<{ offer: Offer; id: string }[]>([]);
+    const [refreshing, setRefreshing] = useState(true);
     const styles = useMemo(() => createStyles(theme), [theme]);
 
     const [error, setError] = useState<string | null>(null);
@@ -47,6 +47,14 @@ export default function HomeScreen() {
         fetchOffers();
     }, []);
 
+    if (refreshing && offers.length === 0) {
+        return (
+            <View style={styles.container}>
+                <ActivityIndicator animating={true} style={{ flex: 1 }} />
+            </View>
+        );
+    }
+
     return (
         <View style={styles.container}>
             <Stack.Screen />
@@ -62,8 +70,8 @@ export default function HomeScreen() {
                 ) : (
                     <FlashList
                         data={offers}
-                        renderItem={({ item }) => <OfferItem item={item} />}
-                        keyExtractor={(item) => item.userId + item.title}
+                        renderItem={({ item }) => <OfferItem item={item.offer} id={item.id} />}
+                        keyExtractor={(item) => item.id}
                         refreshing={refreshing}
                         onRefresh={fetchOffers}
                     />

@@ -104,33 +104,34 @@ class AuthService {
     }
 
     private handleAuthError(error: any): void {
-        let message: string = "An unexpected error occurred";
+        let errorMessage: string = "An unexpected error occurred";
 
         switch (error.code) {
             case "auth/email-already-in-use":
-                message = i18n.t("auth.errors.emailAlreadyInUse");
+                errorMessage = i18n.t("auth.errors.emailAlreadyInUse");
                 break;
             case "auth/invalid-email":
-                message = i18n.t("auth.errors.invalidEmail");
+                errorMessage = i18n.t("auth.errors.invalidEmail");
                 break;
             case "auth/user-not-found":
             case "auth/wrong-password":
-                message = i18n.t("auth.errors.userNotFound");
+                errorMessage = i18n.t("auth.errors.userNotFound");
                 break;
             case "auth/weak-password":
-                message = i18n.t("auth.errors.weakPassword");
+                errorMessage = i18n.t("auth.errors.weakPassword");
                 break;
             case "auth/too-many-requests":
-                message = i18n.t("auth.errors.tooManyRequests");
+                errorMessage = i18n.t("auth.errors.tooManyRequests");
                 break;
             case "rollbackError":
-                message = i18n.t("auth.errors.rollbackError");
+                errorMessage = i18n.t("auth.errors.rollbackError");
                 break;
             default:
-                message = error.message || message;
+                errorMessage = error.message || errorMessage;
         }
 
-        console.error("Firebase Auth Error:", error.code, message);
+        const message = `${i18n.t("auth.errors.title")}, ${error.code}, ${errorMessage}`;
+
         throw new Error(message);
     }
 }

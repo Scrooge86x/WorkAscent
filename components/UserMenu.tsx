@@ -54,7 +54,7 @@ export const UserMenu = () => {
                     </View>
                     <Divider />
                     <Menu.Item
-                        onPress={() => handleAction("/offers/new")}
+                        onPress={() => handleAction("/offer-form")}
                         title={t("menu.newOffer", "Create new offer")}
                         leadingIcon="plus"
                     />

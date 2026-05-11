@@ -15,6 +15,7 @@ import {
     Checkbox,
     Divider,
     HelperText,
+    List,
     Text,
     TextInput,
     useTheme,
@@ -40,6 +41,7 @@ export default function OfferFormScreen() {
 
     const [offer, setOffer] = useState<Offer | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [tagInput, setTagInput] = useState("");
     const [validationErrors, setValidationErrors] = useState<OfferFormErrors>({});
 
     const scrollRef = useRef<ScrollView>(null);
@@ -129,7 +131,7 @@ export default function OfferFormScreen() {
                     country: values.remote ? "" : values.country,
                 },
                 remote: values.remote,
-                tags: "", // TODO: tagi
+                tags: values.tags,
                 salary: values.salaryUnspecified ? 0 : parseInt(values.salary),
                 email: values.email,
                 phoneNumber: values.phone,
@@ -206,6 +208,7 @@ export default function OfferFormScreen() {
                             country: offer?.location?.country || "",
                             salary: offer?.salary?.toString() || "",
                             description: offer?.description || "",
+                            tags: offer?.tags || "",
                             email: offer?.email || "",
                             phone: offer?.phoneNumber || "",
                             companyName: offer?.companyName || "",
@@ -337,6 +340,69 @@ export default function OfferFormScreen() {
                                     style={styles.input}
                                     disabled={isSubmitting || values.salaryUnspecified}
                                 />
+                                <Divider bold style={styles.separator} />
+
+                                <List.Accordion
+                                    title={t("offerForm.tagsTitle", "Tags")}
+                                    left={(props) => <List.Icon {...props} icon="label-outline" />}
+                                    style={styles.accordion}
+                                >
+                                    <View style={styles.tagList}>
+                                        {values.tags
+                                            .split(", ")
+                                            .filter((t) => t !== "")
+                                            .map((tag, index) => (
+                                                <Button
+                                                    key={`${tag}-${index}`}
+                                                    mode="outlined"
+                                                    onPress={() => {
+                                                        const newTags = values.tags
+                                                            .split(", ")
+                                                            .filter((t) => t !== tag)
+                                                            .join(", ");
+                                                        setFieldValue("tags", newTags);
+                                                    }}
+                                                    icon="close"
+                                                    style={styles.tagChip}
+                                                    compact
+                                                >
+                                                    {tag}
+                                                </Button>
+                                            ))}
+                                    </View>
+                                </List.Accordion>
+
+                                <View style={styles.tagInputRow}>
+                                    <TextInput
+                                        mode="outlined"
+                                        label={t("offerForm.addTagLabel", "New tag")}
+                                        value={tagInput}
+                                        onChangeText={setTagInput}
+                                        style={[styles.input, { flex: 1, marginBottom: 0 }]}
+                                        disabled={isSubmitting}
+                                    />
+                                    <Button
+                                        mode="contained-tonal"
+                                        style={styles.addTagButton}
+                                        disabled={!tagInput.trim()}
+                                        onPress={() => {
+                                            const trimmed = tagInput.trim().toLowerCase();
+                                            // Prevent duplicates
+                                            const currentArray = values.tags
+                                                .split(", ")
+                                                .filter((t) => t !== "");
+                                            if (trimmed && !currentArray.includes(trimmed)) {
+                                                const newTags = values.tags
+                                                    ? `${values.tags}, ${trimmed}`
+                                                    : trimmed;
+                                                setFieldValue("tags", newTags);
+                                                setTagInput("");
+                                            }
+                                        }}
+                                    >
+                                        {t("offerForm.addTagButton", "Add")}
+                                    </Button>
+                                </View>
 
                                 <View style={styles.row}>
                                     <Text
@@ -471,5 +537,36 @@ const createStyles = (theme: any) =>
             justifyContent: "space-between",
             alignItems: "center",
             marginTop: 16,
+        },
+        accordion: {
+            backgroundColor: "transparent",
+            paddingHorizontal: 0,
+        },
+        tagList: {
+            flexDirection: "row",
+            flexWrap: "wrap",
+            paddingVertical: 10,
+            paddingLeft: 10,
+        },
+        tagChip: {
+            margin: 4,
+            borderRadius: 8,
+        },
+        noTagsText: {
+            fontStyle: "italic",
+            color: theme.colors.outline,
+            paddingLeft: 12,
+        },
+        tagInputRow: {
+            flexDirection: "row",
+            alignItems: "center",
+            marginBottom: 8,
+            gap: 8,
+        },
+        addTagButton: {
+            height: 50,
+            marginTop: 4,
+            justifyContent: "center",
+            borderRadius: 4,
         },
     });

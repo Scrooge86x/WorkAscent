@@ -39,7 +39,7 @@ export default function SettingsScreen() {
     const handleLogout = async () => {
         try {
             await authService.logout();
-            router.replace("/login");
+            router.replace("/");
         } catch (error) {
             console.error("Logout failed", error);
         }

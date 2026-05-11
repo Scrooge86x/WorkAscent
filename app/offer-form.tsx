@@ -5,7 +5,7 @@ import { offersService } from "@/services/OffersService";
 import * as Network from "expo-network";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { Formik } from "formik";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useTranslation } from "react-i18next";
 import { Keyboard, ScrollView, StyleSheet, TouchableWithoutFeedback, View } from "react-native";
@@ -41,8 +41,8 @@ export default function OfferFormScreen() {
     const [offer, setOffer] = useState<Offer | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [validationErrors, setValidationErrors] = useState<OfferFormErrors>({});
-    const [remote, setRemote] = useState(true);
-    const [salaryUnspecified, setSalaryUnspecified] = useState(false);
+
+    const scrollRef = useRef<ScrollView>(null);
 
     const styles = useMemo(() => createStyles(theme), [theme]);
 
@@ -61,25 +61,25 @@ export default function OfferFormScreen() {
                     "Description cannot be over 500 characters long",
                 );
             }
-            if (remote && !values.city) {
+            if (!values.remote && !values.city) {
                 errors.city = t(
                     "offerForm.validation.cityRequired",
                     "City is required for non-remote offers",
                 );
             }
-            if (remote && !values.region) {
+            if (!values.remote && !values.region) {
                 errors.region = t(
                     "offerForm.validation.regionRequired",
                     "Region is required for non-remote offers",
                 );
             }
-            if (remote && !values.country) {
+            if (!values.remote && !values.country) {
                 errors.country = t(
                     "offerForm.validation.countryRequired",
                     "Country is required for non-remote offers",
                 );
             }
-            if (salaryUnspecified && (!values.salary || values.salary <= 0)) {
+            if (!values.salaryUnspecified && (!values.salary || values.salary <= 0)) {
                 errors.salary = t(
                     "offerForm.validation.salaryRequired",
                     "Salary needs to be greater than 0 unless marked as for negotiation",
@@ -99,12 +99,13 @@ export default function OfferFormScreen() {
             setValidationErrors(errors);
             return Object.keys(errors).length === 0;
         },
-        [remote, salaryUnspecified],
+        [t],
     );
 
     const handleEdit = useCallback(
         async (values: any, { setSubmitting }: any) => {
             setSubmitting(true);
+
             if (!validateData(values)) {
                 setSubmitting(false);
                 setError(
@@ -113,17 +114,8 @@ export default function OfferFormScreen() {
                         "Please fix validation errors before submitting",
                     ),
                 );
+                scrollRef.current?.scrollTo({ y: 0, animated: true });
                 return;
-            }
-
-            if (remote) {
-                values.city = "";
-                values.region = "";
-                values.country = "";
-            }
-
-            if (salaryUnspecified) {
-                values.salary = 0;
             }
 
             const newOffer: Offer = {
@@ -132,18 +124,16 @@ export default function OfferFormScreen() {
                 companyName: values.companyName,
                 description: values.description,
                 location: {
-                    city: values.city,
-                    region: values.region,
-                    country: values.country,
+                    city: values.remote ? "" : values.city,
+                    region: values.remote ? "" : values.region,
+                    country: values.remote ? "" : values.country,
                 },
-                remote: remote,
+                remote: values.remote,
                 tags: "", // TODO: tagi
-                salary: parseInt(values.salary),
+                salary: values.salaryUnspecified ? 0 : parseInt(values.salary),
                 email: values.email,
                 phoneNumber: values.phone,
             };
-
-            console.log(newOffer);
 
             try {
                 if (creatingNewOffer) {
@@ -172,8 +162,6 @@ export default function OfferFormScreen() {
         try {
             const offer = await offersService.getOffer(params.id);
             setOffer(offer);
-            setRemote(offer?.remote || false);
-            setSalaryUnspecified(offer?.salary === 0);
             setError(null);
         } catch (error) {
             setOffer(null);
@@ -196,7 +184,7 @@ export default function OfferFormScreen() {
     }
 
     return (
-        <ScrollView style={styles.container}>
+        <ScrollView ref={scrollRef} style={styles.container}>
             <ErrorPopup message={error} />
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                 <View style={styles.innerContainer}>
@@ -220,6 +208,8 @@ export default function OfferFormScreen() {
                             email: offer?.email || "",
                             phone: offer?.phoneNumber || "",
                             companyName: offer?.companyName || "",
+                            remote: offer?.remote || false,
+                            salaryUnspecified: offer?.salary === 0,
                         }}
                         onSubmit={handleEdit}
                     >
@@ -281,7 +271,7 @@ export default function OfferFormScreen() {
                                     onChangeText={handleChange("city")}
                                     onBlur={handleBlur("city")}
                                     style={styles.input}
-                                    disabled={isSubmitting || remote}
+                                    disabled={isSubmitting || values.remote}
                                 />
 
                                 {validationErrors.region && (
@@ -294,7 +284,7 @@ export default function OfferFormScreen() {
                                     onChangeText={handleChange("region")}
                                     onBlur={handleBlur("region")}
                                     style={styles.input}
-                                    disabled={isSubmitting || remote}
+                                    disabled={isSubmitting || values.remote}
                                 />
 
                                 {validationErrors.country && (
@@ -307,7 +297,7 @@ export default function OfferFormScreen() {
                                     onChangeText={handleChange("country")}
                                     onBlur={handleBlur("country")}
                                     style={styles.input}
-                                    disabled={isSubmitting || remote}
+                                    disabled={isSubmitting || values.remote}
                                 />
 
                                 <View style={styles.row}>
@@ -318,9 +308,9 @@ export default function OfferFormScreen() {
                                         {t("offerForm.remote", "Remote")}
                                     </Text>
                                     <Checkbox
-                                        status={remote ? "checked" : "unchecked"}
+                                        status={values.remote ? "checked" : "unchecked"}
                                         onPress={() => {
-                                            setRemote(!remote);
+                                            setFieldValue("remote", !values.remote);
                                         }}
                                     />
                                 </View>
@@ -344,7 +334,7 @@ export default function OfferFormScreen() {
                                     onBlur={handleBlur("salary")}
                                     keyboardType="decimal-pad"
                                     style={styles.input}
-                                    disabled={isSubmitting || salaryUnspecified}
+                                    disabled={isSubmitting || values.salaryUnspecified}
                                 />
 
                                 <View style={styles.row}>
@@ -355,9 +345,12 @@ export default function OfferFormScreen() {
                                         {t("offerForm.salaryForNegotiation", "For negotiation")}
                                     </Text>
                                     <Checkbox
-                                        status={salaryUnspecified ? "checked" : "unchecked"}
+                                        status={values.salaryUnspecified ? "checked" : "unchecked"}
                                         onPress={() => {
-                                            setSalaryUnspecified(!salaryUnspecified);
+                                            setFieldValue(
+                                                "salaryUnspecified",
+                                                !values.salaryUnspecified,
+                                            );
                                         }}
                                     />
                                 </View>

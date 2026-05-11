@@ -1,6 +1,7 @@
 import { Offer } from "@/models/Offer";
 import { useRouter } from "expo-router";
 import { memo, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, View } from "react-native";
 import { Divider, Text, useTheme } from "react-native-paper";
 
@@ -12,6 +13,7 @@ interface OfferItemProps {
 export const OfferItem = memo(({ item, id }: OfferItemProps) => {
     const router = useRouter();
     const theme = useTheme();
+    const { t } = useTranslation();
     const styles = useMemo(() => createStyles(theme), [theme]);
 
     const handlePress = () => {
@@ -33,10 +35,11 @@ export const OfferItem = memo(({ item, id }: OfferItemProps) => {
                 <Text variant="headlineSmall" style={styles.title}>
                     {item.title}
                 </Text>
-                <Text
-                    variant="bodyMedium"
-                    style={styles.info}
-                >{`${item.salary}zł • ${item.tags}`}</Text>
+                <Text variant="bodyMedium" style={styles.info}>
+                    {item.salary > 0
+                        ? `${item.salary}zł • ${item.tags}`
+                        : `${t("home.forNegotiation", "For negotiation")} • ${item.tags}`}
+                </Text>
                 <Text variant="bodyMedium" style={styles.subtitleInfo}>
                     {item.companyName}
                 </Text>

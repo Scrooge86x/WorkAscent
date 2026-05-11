@@ -27,23 +27,29 @@ export default function RegisterScreen() {
     const theme = useTheme();
     const { t } = useTranslation();
 
-    const RegisterSchema = Yup.object().shape({
-        email: Yup.string()
-            .email(t("auth.validation.invalidEmail", "Invalid email"))
-            .required(t("auth.validation.emailRequired", "Required")),
-        name: Yup.string()
-            .min(2, t("auth.validation.nameTooShort", "Too short"))
-            .required(t("auth.validation.nameRequired", "Required")),
-        password: Yup.string()
-            .min(6, t("auth.validation.passwordTooShort", "Min 6 characters"))
-            .required(t("auth.validation.passwordRequired", "Required")),
-        confirmPassword: Yup.string()
-            .oneOf(
-                [Yup.ref("password")],
-                t("auth.validation.passwordsMustMatch", "Passwords must match"),
-            )
-            .required(t("auth.validation.confirmRequired", "Required")),
-    });
+    const RegisterSchema = useMemo(
+        () =>
+            Yup.object().shape({
+                name: Yup.string()
+                    .min(2, t("auth.validation.nameTooShort", "Too short"))
+                    .required(t("auth.validation.nameRequired", "Name is required")),
+                email: Yup.string()
+                    .email(t("auth.validation.invalidEmail", "Invalid email"))
+                    .required(t("auth.validation.emailRequired", "Email is required")),
+                password: Yup.string()
+                    .min(6, t("auth.validation.passwordTooShort", "Min 6 characters"))
+                    .required(t("auth.validation.passwordRequired", "Password is required")),
+                confirmPassword: Yup.string()
+                    .oneOf(
+                        [Yup.ref("password")],
+                        t("auth.validation.passwordsMustMatch", "Passwords must match"),
+                    )
+                    .required(
+                        t("auth.validation.confirmRequired", "Password confirmation is required"),
+                    ),
+            }),
+        [t],
+    );
 
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);

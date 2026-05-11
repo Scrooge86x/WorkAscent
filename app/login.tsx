@@ -6,11 +6,13 @@ import { useTranslation } from "react-i18next";
 import {
     Keyboard,
     KeyboardAvoidingView,
+    Platform,
     StyleSheet,
     TouchableWithoutFeedback,
     View,
 } from "react-native";
 import { Button, HelperText, Text, TextInput, useTheme } from "react-native-paper";
+import * as Yup from "yup";
 
 export default function LoginScreen() {
     const router = useRouter();
@@ -22,6 +24,19 @@ export default function LoginScreen() {
 
     const togglePassword = () => setShowPassword(!showPassword);
     const goToSignup = () => router.push("/register");
+
+    const LoginSchema = useMemo(
+        () =>
+            Yup.object().shape({
+                email: Yup.string()
+                    .email(t("auth.validation.invalidEmail", "Invalid email"))
+                    .required(t("auth.validation.emailRequired", "Email is required")),
+                password: Yup.string().required(
+                    t("auth.validation.passwordRequired", "Password is required"),
+                ),
+            }),
+        [t],
+    );
 
     const handleLogin = async (values: any, { setSubmitting }: any) => {
         setGlobalError("");
@@ -38,7 +53,10 @@ export default function LoginScreen() {
     const styles = useMemo(() => createStyles(theme), [theme]);
 
     return (
-        <KeyboardAvoidingView style={styles.container} behavior={"height"}>
+        <KeyboardAvoidingView
+            style={styles.container}
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+        >
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                 <View style={styles.innerContainer}>
                     <Stack.Screen />
@@ -55,38 +73,80 @@ export default function LoginScreen() {
                         )}
                     </View>
 
-                    <Formik initialValues={{ email: "", password: "" }} onSubmit={handleLogin}>
-                        {({ handleChange, handleBlur, handleSubmit, values, isSubmitting }) => (
+                    <Formik
+                        initialValues={{ email: "", password: "" }}
+                        validationSchema={LoginSchema}
+                        onSubmit={handleLogin}
+                    >
+                        {({
+                            handleChange,
+                            handleBlur,
+                            handleSubmit,
+                            values,
+                            errors,
+                            touched,
+                            isSubmitting,
+                            submitCount,
+                        }) => (
                             <View style={styles.form}>
-                                <TextInput
-                                    mode="outlined"
-                                    label={t("login.emailLabel", "E-mail")}
-                                    value={values.email}
-                                    onChangeText={handleChange("email")}
-                                    onBlur={handleBlur("email")}
-                                    keyboardType="email-address"
-                                    autoCapitalize="none"
-                                    style={styles.input}
-                                    disabled={isSubmitting}
-                                />
+                                <View>
+                                    <TextInput
+                                        mode="outlined"
+                                        label={t("login.emailLabel", "E-mail")}
+                                        value={values.email}
+                                        onChangeText={handleChange("email")}
+                                        onBlur={handleBlur("email")}
+                                        keyboardType="email-address"
+                                        autoCapitalize="none"
+                                        autoCorrect={false}
+                                        spellCheck={false}
+                                        autoComplete="off"
+                                        style={styles.input}
+                                        disabled={isSubmitting}
+                                        error={(touched.email || submitCount > 0) && !!errors.email}
+                                    />
+                                    <HelperText
+                                        type="error"
+                                        visible={
+                                            (touched.email || submitCount > 0) && !!errors.email
+                                        }
+                                    >
+                                        {errors.email}
+                                    </HelperText>
+                                </View>
 
-                                <TextInput
-                                    mode="outlined"
-                                    label={t("login.passwordLabel", "Password")}
-                                    value={values.password}
-                                    onChangeText={handleChange("password")}
-                                    onBlur={handleBlur("password")}
-                                    secureTextEntry={!showPassword}
-                                    style={styles.input}
-                                    disabled={isSubmitting}
-                                    right={
-                                        <TextInput.Icon
-                                            icon={showPassword ? "eye-off" : "eye"}
-                                            onPress={togglePassword}
-                                            forceTextInputFocus={false}
-                                        />
-                                    }
-                                />
+                                <View>
+                                    <TextInput
+                                        mode="outlined"
+                                        label={t("login.passwordLabel", "Password")}
+                                        value={values.password}
+                                        onChangeText={handleChange("password")}
+                                        onBlur={handleBlur("password")}
+                                        secureTextEntry={!showPassword}
+                                        style={styles.input}
+                                        disabled={isSubmitting}
+                                        error={
+                                            (touched.password || submitCount > 0) &&
+                                            !!errors.password
+                                        }
+                                        right={
+                                            <TextInput.Icon
+                                                icon={showPassword ? "eye-off" : "eye"}
+                                                onPress={togglePassword}
+                                                forceTextInputFocus={false}
+                                            />
+                                        }
+                                    />
+                                    <HelperText
+                                        type="error"
+                                        visible={
+                                            (touched.password || submitCount > 0) &&
+                                            !!errors.password
+                                        }
+                                    >
+                                        {errors.password}
+                                    </HelperText>
+                                </View>
 
                                 <Button
                                     mode="contained"

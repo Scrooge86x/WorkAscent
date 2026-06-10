@@ -1,0 +1,10 @@
+{
+    "login": {
+        "title": "Zaloguj się",
+        "emailLabel": "E-mail",
+        "passwordLabel": "Hasło",
+        "button": "Zaloguj",
+        "noAccount": "Nie masz konta? ",
+        "signUpLink": "Zarejestruj się"
+    }
+}

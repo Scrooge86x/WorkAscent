@@ -1,0 +1,9 @@
+{
+    "home": {
+        "forNegotiation": "For negotiation",
+        "fetchError": "Failed to fetch offers",
+        "found": "Found",
+        "offers": "offers matching your criteria:",
+        "noOffers": "No offers found."
+    }
+}

@@ -1,0 +1,10 @@
+{
+    "login": {
+        "title": "Sign in",
+        "emailLabel": "E-mail",
+        "passwordLabel": "Password",
+        "button": "Login",
+        "noAccount": "Don't have an account? ",
+        "signUpLink": "Sign up"
+    }
+}

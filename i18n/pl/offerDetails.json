@@ -1,0 +1,19 @@
+{
+    "offerDetails": {
+        "headerTitle": "Szczegóły oferty",
+        "remote": "Zdalna",
+        "locationNotSpecified": "Lokalizacja nieokreślona",
+        "salaryNotSpecified": "Do negocjacji",
+        "description": "Opis oferty",
+        "contactInfo": "Informacje kontaktowe",
+        "moderation": "Akcje moderacyjne",
+        "deletion": "Usuwanie oferty",
+        "deletionNotice": "Czy na pewno chcesz usunąć tę ofertę? Tej operacji nie można cofnąć!",
+        "cancel": "Anuluj",
+        "delete": "Usuń",
+        "edit": "Edytuj ofertę",
+        "deleteOffer": "Usuń ofertę",
+        "loadError": "Nie udało się załadować szczegółów oferty",
+        "deleteError": "Nie udało się usunąć oferty"
+    }
+}

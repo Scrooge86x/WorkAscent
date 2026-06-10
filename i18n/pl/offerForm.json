@@ -1,0 +1,40 @@
+{
+    "offerForm": {
+        "validation": {
+            "titleRequired": "Tytuł jest wymagany",
+            "descriptionRequired": "Opis nie może przekraczać 500 znaków",
+            "cityRequired": "Miasto jest wymagane dla ofert niestacjonarnych",
+            "regionRequired": "Region jest wymagany dla ofert niestacjonarnych",
+            "countryRequired": "Kraj jest wymagany dla ofert niestacjonarnych",
+            "salaryRequired": "Wynagrodzenie musi być większe od 0, chyba że oznaczone jako do negocjacji",
+            "emailRequired": "Email jest wymagany",
+            "emailInvalid": "Email jest nieprawidłowy",
+            "companyNameRequired": "Nazwa firmy jest wymagana"
+        },
+        "validationError": "Proszę poprawić błędy walidacji przed wysłaniem",
+        "saveError": "Nie udało się zapisać oferty",
+        "fetchError": "Nie udało się pobrać szczegółów oferty",
+        "creator": "Kreator oferty",
+        "editor": "Edycja oferty",
+        "titleAndDescription": "Tytuł i opis",
+        "titleLabel": "Tytuł",
+        "descriptionLabel": "Opis",
+        "location": "Lokalizacja",
+        "cityLabel": "Miasto",
+        "regionLabel": "Region",
+        "countryLabel": "Kraj",
+        "remote": "Zdalna",
+        "salaryAndTags": "Wynagrodzenie i tagi",
+        "salaryLabel": "Wynagrodzenie (PLN)",
+        "tagsTitle": "Tagi",
+        "addTagLabel": "Nowy tag",
+        "addTagButton": "Dodaj",
+        "salaryForNegotiation": "Do negocjacji",
+        "contact": "Informacje kontaktowe",
+        "emailLabel": "Email",
+        "companyNameLabel": "Nazwa firmy",
+        "phoneLabel": "Numer telefonu",
+        "createButton": "Utwórz ofertę",
+        "saveButton": "Zapisz ofertę"
+    }
+}

@@ -1,0 +1,40 @@
+{
+    "offerForm": {
+        "validation": {
+            "titleRequired": "Title is required",
+            "descriptionRequired": "Description cannot be over 500 characters long",
+            "cityRequired": "City is required for non-remote offers",
+            "regionRequired": "Region is required for non-remote offers",
+            "countryRequired": "Country is required for non-remote offers",
+            "salaryRequired": "Salary needs to be greater than 0 unless marked as for negotiation",
+            "emailRequired": "Email is required",
+            "emailInvalid": "Email is invalid",
+            "companyNameRequired": "Company name is required"
+        },
+        "validationError": "Please fix validation errors before submitting",
+        "saveError": "Failed to save offer",
+        "fetchError": "Failed to fetch offer details",
+        "creator": "Offer Creator",
+        "editor": "Offer Editor",
+        "titleAndDescription": "Title and description",
+        "titleLabel": "Title",
+        "descriptionLabel": "Description",
+        "location": "Location",
+        "cityLabel": "City",
+        "regionLabel": "Region",
+        "countryLabel": "Country",
+        "remote": "Remote",
+        "salaryAndTags": "Salary and Tags",
+        "salaryLabel": "Salary (PLN)",
+        "tagsTitle": "Tags",
+        "addTagLabel": "New tag",
+        "addTagButton": "Add",
+        "salaryForNegotiation": "For negotiation",
+        "contact": "Contact information",
+        "emailLabel": "Email",
+        "companyNameLabel": "Company name",
+        "phoneLabel": "Phone number",
+        "createButton": "Create Offer",
+        "saveButton": "Save Offer"
+    }
+}

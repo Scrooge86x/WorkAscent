@@ -1,0 +1,10 @@
+{
+    "menu": {
+        "loggedInAs": "Logged in as:",
+        "newOffer": "Create new offer",
+        "myOffers": "My offers",
+        "settings": "Settings",
+        "logout": "Log out",
+        "signIn": "Sign in"
+    }
+}

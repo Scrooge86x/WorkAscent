@@ -1,167 +1,51 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 
+import enAuth from "./en/auth.json";
+import enCommon from "./en/common.json";
+import enHome from "./en/home.json";
+import enLogin from "./en/login.json";
+import enMenu from "./en/menu.json";
+import enOfferDetails from "./en/offerDetails.json";
+import enOfferForm from "./en/offerForm.json";
+import enRegister from "./en/register.json";
+import enSettings from "./en/settings.json";
+
+import plAuth from "./pl/auth.json";
+import plCommon from "./pl/common.json";
+import plHome from "./pl/home.json";
+import plLogin from "./pl/login.json";
+import plMenu from "./pl/menu.json";
+import plOfferDetails from "./pl/offerDetails.json";
+import plOfferForm from "./pl/offerForm.json";
+import plRegister from "./pl/register.json";
+import plSettings from "./pl/settings.json";
+
 const resources = {
     en: {
         translation: {
-            auth: {
-                errors: {
-                    title: "Firebase Auth error:",
-                    emailAlreadyInUse: "This email is already in use",
-                    invalidEmail: "Invalid email address",
-                    userNotFound: "Invalid email or password",
-                    wrongPassword: "Invalid email or password",
-                    weakPassword: "Password is too weak (minimum 6 characters)",
-                    tooManyRequests: "Too many login attempts. Try again later",
-                    unexpected: "An unexpected error occurred",
-                    notLoggedIn: "User is not logged in",
-                    rollbackError: "An error occured while rollbacking user creation.",
-                },
-                validation: {
-                    invalidEmail: "Invalid email",
-                    emailRequired: "Email is required",
-                    passwordRequired: "Password is required",
-                },
-            },
-            login: {
-                title: "Sign in",
-                emailLabel: "E-mail",
-                passwordLabel: "Password",
-                button: "Login",
-                noAccount: "Don't have an account? ",
-                signUpLink: "Sign up",
-            },
-            register: {
-                title: "Register\naccount",
-                nameLabel: "Name",
-                emailLabel: "E-mail",
-                passwordLabel: "Password",
-                repeatPasswordLabel: "Repeat password",
-                button: "Register",
-                hasAccount: "Already have an account? ",
-                logInLink: "Log in",
-            },
-            settings: {
-                headerTitle: "WorkAscent",
-                title: "Settings",
-                language: "Language",
-                appearance: "Appearance",
-                light: "Light",
-                auto: "Auto",
-                dark: "Dark",
-                account: "Account",
-                loggedInAs: "Logged in as:",
-                logout: "Log out",
-                logoutFailed: "Logout failed",
-            },
-            menu: {
-                loggedInAs: "Logged in as:",
-                newOffer: "Create new offer",
-                myOffers: "My offers",
-                settings: "Settings",
-                logout: "Log out",
-                signIn: "Sign in",
-            },
-            offerDetails: {
-                headerTitle: "Offer Details",
-                remote: "Remote",
-                locationNotSpecified: "Location not specified",
-                salaryNotSpecified: "For negotiation",
-                description: "Offer description",
-                contactInfo: "Contact information",
-                moderation: "Moderation actions",
-                deletion: "Offer deletion",
-                deletionNotice:
-                    "Are you sure you want to delete this offer? This action cannot be undone!",
-                cancel: "Cancel",
-                delete: "Delete",
-                edit: "Edit offer",
-                deleteOffer: "Delete offer",
-                noConnection: "No internet connection",
-                loadError: "Failed to load offer details",
-                deleteError: "Failed to delete offer",
-            },
+            ...enCommon,
+            ...enAuth,
+            ...enLogin,
+            ...enRegister,
+            ...enSettings,
+            ...enMenu,
+            ...enOfferDetails,
+            ...enHome,
+            ...enOfferForm,
         },
     },
     pl: {
         translation: {
-            auth: {
-                errors: {
-                    title: "Błąd Firebase Auth:",
-                    emailAlreadyInUse: "Ten adres email jest już używany",
-                    invalidEmail: "Nieprawidłowy adres email",
-                    userNotFound: "Nieprawidłowy email lub hasło",
-                    wrongPassword: "Nieprawidłowy email lub hasło",
-                    weakPassword: "Hasło jest zbyt słabe (minimum 6 znaków)",
-                    tooManyRequests: "Zbyt wiele prób logowania. Spróbuj ponownie za chwilę",
-                    unexpected: "Wystąpił nieoczekiwany błąd",
-                    notLoggedIn: "Użytkownik nie jest zalogowany",
-                    rollbackError: "Wystąpił błąd podczas cofania tworzenia użytkownika.",
-                },
-                validation: {
-                    invalidEmail: "Nieprawidłowy email",
-                    emailRequired: "Email jest wymagany",
-                    passwordRequired: "Hasło jest wymagane",
-                },
-            },
-            login: {
-                title: "Zaloguj się",
-                emailLabel: "E-mail",
-                passwordLabel: "Hasło",
-                button: "Zaloguj",
-                noAccount: "Nie masz konta? ",
-                signUpLink: "Zarejestruj się",
-            },
-            register: {
-                title: "Zarejestruj\nkonto",
-                nameLabel: "Imię/Nazwa",
-                emailLabel: "E-mail",
-                passwordLabel: "Hasło",
-                repeatPasswordLabel: "Powtórz hasło",
-                button: "Zarejestruj",
-                hasAccount: "Masz już konto? ",
-                logInLink: "Zaloguj się",
-            },
-            settings: {
-                headerTitle: "WorkAscent",
-                title: "Ustawienia",
-                language: "Język",
-                appearance: "Wygląd",
-                light: "Jasny",
-                auto: "Automatyczny",
-                dark: "Ciemny",
-                account: "Konto",
-                loggedInAs: "Zalogowany jako:",
-                logout: "Wyloguj się",
-                logoutFailed: "Wylogowanie nie powiodło się",
-            },
-            menu: {
-                loggedInAs: "Zalogowany jako:",
-                newOffer: "Utwórz nową ofertę",
-                myOffers: "Moje oferty",
-                settings: "Ustawienia",
-                logout: "Wyloguj się",
-                signIn: "Zaloguj się",
-            },
-            offerDetails: {
-                headerTitle: "Szczegóły oferty",
-                remote: "Zdalna",
-                locationNotSpecified: "Lokalizacja nieokreślona",
-                salaryNotSpecified: "Do negocjacji",
-                description: "Opis oferty",
-                contactInfo: "Informacje kontaktowe",
-                moderation: "Akcje moderacyjne",
-                deletion: "Usuwanie oferty",
-                deletionNotice:
-                    "Czy na pewno chcesz usunąć tę ofertę? Tej operacji nie można cofnąć!",
-                cancel: "Anuluj",
-                delete: "Usuń",
-                edit: "Edytuj ofertę",
-                deleteOffer: "Usuń ofertę",
-                noConnection: "Brak połączenia z internetem",
-                loadError: "Nie udało się załadować szczegółów oferty",
-                deleteError: "Nie udało się usunąć oferty",
-            },
+            ...plCommon,
+            ...plAuth,
+            ...plLogin,
+            ...plRegister,
+            ...plSettings,
+            ...plMenu,
+            ...plOfferDetails,
+            ...plHome,
+            ...plOfferForm,
         },
     },
 };

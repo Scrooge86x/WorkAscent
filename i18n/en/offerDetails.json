@@ -1,0 +1,19 @@
+{
+    "offerDetails": {
+        "headerTitle": "Offer Details",
+        "remote": "Remote",
+        "locationNotSpecified": "Location not specified",
+        "salaryNotSpecified": "For negotiation",
+        "description": "Offer description",
+        "contactInfo": "Contact information",
+        "moderation": "Moderation actions",
+        "deletion": "Offer deletion",
+        "deletionNotice": "Are you sure you want to delete this offer? This action cannot be undone!",
+        "cancel": "Cancel",
+        "delete": "Delete",
+        "edit": "Edit offer",
+        "deleteOffer": "Delete offer",
+        "loadError": "Failed to load offer details",
+        "deleteError": "Failed to delete offer"
+    }
+}

@@ -1,0 +1,12 @@
+{
+    "register": {
+        "title": "Zarejestruj\nkonto",
+        "nameLabel": "Imię/Nazwa",
+        "emailLabel": "E-mail",
+        "passwordLabel": "Hasło",
+        "repeatPasswordLabel": "Powtórz hasło",
+        "button": "Zarejestruj",
+        "hasAccount": "Masz już konto? ",
+        "logInLink": "Zaloguj się"
+    }
+}

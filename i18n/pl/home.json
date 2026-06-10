@@ -1,0 +1,9 @@
+{
+    "home": {
+        "forNegotiation": "Do negocjacji",
+        "fetchError": "Nie udało się pobrać ofert",
+        "found": "Znaleziono",
+        "offers": "ofert spełniających kryteria:",
+        "noOffers": "Nie znaleziono ofert."
+    }
+}

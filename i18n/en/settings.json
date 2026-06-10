@@ -1,0 +1,15 @@
+{
+    "settings": {
+        "headerTitle": "WorkAscent",
+        "title": "Settings",
+        "language": "Language",
+        "appearance": "Appearance",
+        "light": "Light",
+        "auto": "Auto",
+        "dark": "Dark",
+        "account": "Account",
+        "loggedInAs": "Logged in as:",
+        "logout": "Log out",
+        "logoutFailed": "Logout failed"
+    }
+}

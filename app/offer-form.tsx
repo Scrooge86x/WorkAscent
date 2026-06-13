@@ -8,7 +8,15 @@ import { Formik } from "formik";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useTranslation } from "react-i18next";
-import { Keyboard, ScrollView, StyleSheet, TouchableWithoutFeedback, View } from "react-native";
+import {
+    Keyboard,
+    KeyboardAvoidingView, // 1. Imported KeyboardAvoidingView
+    Platform, // 2. Imported Platform for platform-specific behavior
+    ScrollView,
+    StyleSheet,
+    TouchableWithoutFeedback,
+    View,
+} from "react-native";
 import {
     ActivityIndicator,
     Button,
@@ -50,7 +58,6 @@ export default function OfferFormScreen() {
 
     const creatingNewOffer = !params.id;
 
-    // TODO: Lepsza walidacja
     const validateData = useCallback(
         (values: any) => {
             const errors: OfferFormErrors = {};
@@ -187,322 +194,363 @@ export default function OfferFormScreen() {
     }
 
     return (
-        <ScrollView ref={scrollRef} style={styles.container}>
-            <ErrorPopup message={error} />
-            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                <View style={styles.innerContainer}>
-                    <Stack.Screen />
+        // 3. Wrap entire tree with KeyboardAvoidingView to ensure layout pushes properly
+        <KeyboardAvoidingView
+            style={styles.keyboardAvoidingContainer}
+            behavior={Platform.OS === "ios" ? "padding" : undefined}
+            keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0} // Adjusts height if using top stack headers
+        >
+            <ScrollView
+                ref={scrollRef}
+                style={styles.container}
+                contentContainerStyle={styles.scrollContent}
+            >
+                <ErrorPopup message={error} />
+                <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                    <View style={styles.innerContainer}>
+                        <Stack.Screen />
 
-                    <Text variant="headlineSmall" style={styles.title}>
-                        {creatingNewOffer
-                            ? t("offerForm.creator", "Offer Creator")
-                            : t("offerForm.editor", "Offer Editor")}
-                    </Text>
+                        <Text variant="headlineSmall" style={styles.title}>
+                            {creatingNewOffer
+                                ? t("offerForm.creator", "Offer Creator")
+                                : t("offerForm.editor", "Offer Editor")}
+                        </Text>
 
-                    <Formik
-                        enableReinitialize={true}
-                        initialValues={{
-                            title: offer?.title || "",
-                            city: offer?.location?.city || "",
-                            region: offer?.location?.region || "",
-                            country: offer?.location?.country || "",
-                            salary: offer?.salary?.toString() || "",
-                            description: offer?.description || "",
-                            tags: offer?.tags || "",
-                            email: offer?.email || "",
-                            phone: offer?.phoneNumber || "",
-                            companyName: offer?.companyName || "",
-                            remote: offer?.remote || false,
-                            salaryUnspecified: offer?.salary === 0,
-                        }}
-                        onSubmit={handleEdit}
-                    >
-                        {({
-                            handleChange,
-                            handleBlur,
-                            handleSubmit,
-                            setFieldValue,
-                            values,
-                            isSubmitting,
-                        }) => (
-                            <View style={styles.form}>
-                                <Text variant="bodyMedium" style={styles.subtitle}>
-                                    {t("offerForm.titleAndDescription", "Title and description")}
-                                </Text>
-
-                                {validationErrors.title && (
-                                    <HelperText type="error">{validationErrors.title}</HelperText>
-                                )}
-                                <TextInput
-                                    mode="outlined"
-                                    label={t("offerForm.titleLabel", "Title")}
-                                    value={values.title}
-                                    onChangeText={handleChange("title")}
-                                    onBlur={handleBlur("title")}
-                                    style={styles.input}
-                                    disabled={isSubmitting}
-                                />
-
-                                {validationErrors.description && (
-                                    <HelperText type="error">
-                                        {validationErrors.description}
-                                    </HelperText>
-                                )}
-                                <TextInput
-                                    mode="outlined"
-                                    label={t("offerForm.descriptionLabel", "Description")}
-                                    value={values.description}
-                                    onChangeText={handleChange("description")}
-                                    onBlur={handleBlur("description")}
-                                    style={styles.input}
-                                    disabled={isSubmitting}
-                                    multiline
-                                    numberOfLines={4}
-                                />
-
-                                <Divider bold={true} style={styles.separator} />
-                                <Text variant="bodyMedium" style={styles.subtitle}>
-                                    {t("offerForm.location", "Location")}
-                                </Text>
-
-                                {validationErrors.city && (
-                                    <HelperText type="error">{validationErrors.city}</HelperText>
-                                )}
-                                <TextInput
-                                    mode="outlined"
-                                    label={t("offerForm.cityLabel", "City")}
-                                    value={values.city}
-                                    onChangeText={handleChange("city")}
-                                    onBlur={handleBlur("city")}
-                                    style={styles.input}
-                                    disabled={isSubmitting || values.remote}
-                                />
-
-                                {validationErrors.region && (
-                                    <HelperText type="error">{validationErrors.region}</HelperText>
-                                )}
-                                <TextInput
-                                    mode="outlined"
-                                    label={t("offerForm.regionLabel", "Region")}
-                                    value={values.region}
-                                    onChangeText={handleChange("region")}
-                                    onBlur={handleBlur("region")}
-                                    style={styles.input}
-                                    disabled={isSubmitting || values.remote}
-                                />
-
-                                {validationErrors.country && (
-                                    <HelperText type="error">{validationErrors.country}</HelperText>
-                                )}
-                                <TextInput
-                                    mode="outlined"
-                                    label={t("offerForm.countryLabel", "Country")}
-                                    value={values.country}
-                                    onChangeText={handleChange("country")}
-                                    onBlur={handleBlur("country")}
-                                    style={styles.input}
-                                    disabled={isSubmitting || values.remote}
-                                />
-
-                                <View style={styles.row}>
-                                    <Text
-                                        variant="bodyMedium"
-                                        style={{ color: theme.colors.onSurfaceVariant }}
-                                    >
-                                        {t("offerForm.remote", "Remote")}
+                        <Formik
+                            enableReinitialize={true}
+                            initialValues={{
+                                title: offer?.title || "",
+                                city: offer?.location?.city || "",
+                                region: offer?.location?.region || "",
+                                country: offer?.location?.country || "",
+                                salary: offer?.salary?.toString() || "",
+                                description: offer?.description || "",
+                                tags: offer?.tags || "",
+                                email: offer?.email || "",
+                                phone: offer?.phoneNumber || "",
+                                companyName: offer?.companyName || "",
+                                remote: offer?.remote || false,
+                                salaryUnspecified: offer?.salary === 0,
+                            }}
+                            onSubmit={handleEdit}
+                        >
+                            {({
+                                handleChange,
+                                handleBlur,
+                                handleSubmit,
+                                setFieldValue,
+                                values,
+                                isSubmitting,
+                            }) => (
+                                <View style={styles.form}>
+                                    <Text variant="bodyMedium" style={styles.subtitle}>
+                                        {t(
+                                            "offerForm.titleAndDescription",
+                                            "Title and description",
+                                        )}
                                     </Text>
-                                    <Checkbox
-                                        status={values.remote ? "checked" : "unchecked"}
-                                        onPress={() => {
-                                            setFieldValue("remote", !values.remote);
-                                        }}
-                                    />
-                                </View>
 
-                                <Divider bold={true} style={styles.separator} />
-                                <Text variant="bodyMedium" style={styles.subtitle}>
-                                    {t("offerForm.salaryAndTags", "Salary and Tags")}
-                                </Text>
-
-                                {validationErrors.salary && (
-                                    <HelperText type="error">{validationErrors.salary}</HelperText>
-                                )}
-                                <TextInput
-                                    mode="outlined"
-                                    label={t("offerForm.salaryLabel", "Salary (PLN)")}
-                                    value={values.salary}
-                                    onChangeText={(val) => {
-                                        const numericValue = val.replace(/[^0-9]/g, "");
-                                        setFieldValue("salary", numericValue);
-                                    }}
-                                    onBlur={handleBlur("salary")}
-                                    keyboardType="decimal-pad"
-                                    style={styles.input}
-                                    disabled={isSubmitting || values.salaryUnspecified}
-                                />
-                                <Divider bold style={styles.separator} />
-
-                                <List.Accordion
-                                    title={t("offerForm.tagsTitle", "Tags")}
-                                    left={(props) => <List.Icon {...props} icon="label-outline" />}
-                                    style={styles.accordion}
-                                >
-                                    <View style={styles.tagList}>
-                                        {values.tags
-                                            .split(", ")
-                                            .filter((t) => t !== "")
-                                            .map((tag, index) => (
-                                                <Button
-                                                    key={`${tag}-${index}`}
-                                                    mode="outlined"
-                                                    onPress={() => {
-                                                        const newTags = values.tags
-                                                            .split(", ")
-                                                            .filter((t) => t !== tag)
-                                                            .join(", ");
-                                                        setFieldValue("tags", newTags);
-                                                    }}
-                                                    icon="close"
-                                                    style={styles.tagChip}
-                                                    compact
-                                                >
-                                                    {tag}
-                                                </Button>
-                                            ))}
-                                    </View>
-                                </List.Accordion>
-
-                                <View style={styles.tagInputRow}>
+                                    {validationErrors.title && (
+                                        <HelperText type="error">
+                                            {validationErrors.title}
+                                        </HelperText>
+                                    )}
                                     <TextInput
                                         mode="outlined"
-                                        label={t("offerForm.addTagLabel", "New tag")}
-                                        value={tagInput}
-                                        onChangeText={setTagInput}
-                                        style={[styles.input, { flex: 1, marginBottom: 0 }]}
+                                        label={t("offerForm.titleLabel", "Title")}
+                                        value={values.title}
+                                        onChangeText={handleChange("title")}
+                                        onBlur={handleBlur("title")}
+                                        style={styles.input}
                                         disabled={isSubmitting}
                                     />
-                                    <Button
-                                        mode="contained-tonal"
-                                        style={styles.addTagButton}
-                                        disabled={!tagInput.trim()}
-                                        onPress={() => {
-                                            const trimmed = tagInput.trim().toLowerCase();
-                                            // Prevent duplicates
-                                            const currentArray = values.tags
-                                                .split(", ")
-                                                .filter((t) => t !== "");
-                                            if (trimmed && !currentArray.includes(trimmed)) {
-                                                const newTags = values.tags
-                                                    ? `${values.tags}, ${trimmed}`
-                                                    : trimmed;
-                                                setFieldValue("tags", newTags);
-                                                setTagInput("");
-                                            }
+
+                                    {validationErrors.description && (
+                                        <HelperText type="error">
+                                            {validationErrors.description}
+                                        </HelperText>
+                                    )}
+                                    <TextInput
+                                        mode="outlined"
+                                        label={t("offerForm.descriptionLabel", "Description")}
+                                        value={values.description}
+                                        onChangeText={handleChange("description")}
+                                        onBlur={handleBlur("description")}
+                                        style={styles.input}
+                                        disabled={isSubmitting}
+                                        multiline
+                                        numberOfLines={4}
+                                    />
+
+                                    <Divider bold={true} style={styles.separator} />
+                                    <Text variant="bodyMedium" style={styles.subtitle}>
+                                        {t("offerForm.location", "Location")}
+                                    </Text>
+
+                                    {validationErrors.city && (
+                                        <HelperText type="error">
+                                            {validationErrors.city}
+                                        </HelperText>
+                                    )}
+                                    <TextInput
+                                        mode="outlined"
+                                        label={t("offerForm.cityLabel", "City")}
+                                        value={values.city}
+                                        onChangeText={handleChange("city")}
+                                        onBlur={handleBlur("city")}
+                                        style={styles.input}
+                                        disabled={isSubmitting || values.remote}
+                                    />
+
+                                    {validationErrors.region && (
+                                        <HelperText type="error">
+                                            {validationErrors.region}
+                                        </HelperText>
+                                    )}
+                                    <TextInput
+                                        mode="outlined"
+                                        label={t("offerForm.regionLabel", "Region")}
+                                        value={values.region}
+                                        onChangeText={handleChange("region")}
+                                        onBlur={handleBlur("region")}
+                                        style={styles.input}
+                                        disabled={isSubmitting || values.remote}
+                                    />
+
+                                    {validationErrors.country && (
+                                        <HelperText type="error">
+                                            {validationErrors.country}
+                                        </HelperText>
+                                    )}
+                                    <TextInput
+                                        mode="outlined"
+                                        label={t("offerForm.countryLabel", "Country")}
+                                        value={values.country}
+                                        onChangeText={handleChange("country")}
+                                        onBlur={handleBlur("country")}
+                                        style={styles.input}
+                                        disabled={isSubmitting || values.remote}
+                                    />
+
+                                    <View style={styles.row}>
+                                        <Text
+                                            variant="bodyMedium"
+                                            style={{ color: theme.colors.onSurfaceVariant }}
+                                        >
+                                            {t("offerForm.remote", "Remote")}
+                                        </Text>
+                                        <Checkbox
+                                            status={values.remote ? "checked" : "unchecked"}
+                                            onPress={() => {
+                                                setFieldValue("remote", !values.remote);
+                                            }}
+                                        />
+                                    </View>
+
+                                    <Divider bold={true} style={styles.separator} />
+                                    <Text variant="bodyMedium" style={styles.subtitle}>
+                                        {t("offerForm.salaryAndTags", "Salary and Tags")}
+                                    </Text>
+
+                                    {validationErrors.salary && (
+                                        <HelperText type="error">
+                                            {validationErrors.salary}
+                                        </HelperText>
+                                    )}
+                                    <TextInput
+                                        mode="outlined"
+                                        label={t("offerForm.salaryLabel", "Salary (PLN)")}
+                                        value={values.salary}
+                                        onChangeText={(val) => {
+                                            const numericValue = val.replace(/[^0-9]/g, "");
+                                            setFieldValue("salary", numericValue);
                                         }}
+                                        onBlur={handleBlur("salary")}
+                                        keyboardType="decimal-pad"
+                                        style={styles.input}
+                                        disabled={isSubmitting || values.salaryUnspecified}
+                                    />
+                                    <Divider bold style={styles.separator} />
+
+                                    <List.AccordionGroup expandedId="tags-accordion">
+                                        <List.Accordion
+                                            id="tags-accordion"
+                                            title={t("offerForm.tagsTitle", "Tags")}
+                                            left={(props) => (
+                                                <List.Icon {...props} icon="label-outline" />
+                                            )}
+                                            style={styles.accordion}
+                                        >
+                                            <View style={styles.tagList}>
+                                                {values.tags
+                                                    .split(", ")
+                                                    .filter((t) => t !== "")
+                                                    .map((tag, index) => (
+                                                        <Button
+                                                            key={`${tag}-${index}`}
+                                                            mode="outlined"
+                                                            onPress={() => {
+                                                                const newTags = values.tags
+                                                                    .split(", ")
+                                                                    .filter((t) => t !== tag)
+                                                                    .join(", ");
+                                                                setFieldValue("tags", newTags);
+                                                            }}
+                                                            icon="close"
+                                                            style={styles.tagChip}
+                                                            compact
+                                                        >
+                                                            {tag}
+                                                        </Button>
+                                                    ))}
+                                            </View>
+                                        </List.Accordion>
+                                    </List.AccordionGroup>
+
+                                    <View style={styles.tagInputRow}>
+                                        <TextInput
+                                            mode="outlined"
+                                            label={t("offerForm.addTagLabel", "New tag")}
+                                            value={tagInput}
+                                            onChangeText={setTagInput}
+                                            style={[styles.input, { flex: 1, marginBottom: 0 }]}
+                                            disabled={isSubmitting}
+                                        />
+                                        <Button
+                                            mode="contained-tonal"
+                                            style={styles.addTagButton}
+                                            disabled={!tagInput.trim()}
+                                            onPress={() => {
+                                                const trimmed = tagInput.trim().toLowerCase();
+                                                const currentArray = values.tags
+                                                    .split(", ")
+                                                    .filter((t) => t !== "");
+                                                if (trimmed && !currentArray.includes(trimmed)) {
+                                                    const newTags = values.tags
+                                                        ? `${values.tags}, ${trimmed}`
+                                                        : trimmed;
+                                                    setFieldValue("tags", newTags);
+                                                    setTagInput("");
+                                                }
+                                            }}
+                                        >
+                                            {t("offerForm.addTagButton", "Add")}
+                                        </Button>
+                                    </View>
+
+                                    <View style={styles.row}>
+                                        <Text
+                                            variant="bodyMedium"
+                                            style={{ color: theme.colors.onSurfaceVariant }}
+                                        >
+                                            {t("offerForm.salaryForNegotiation", "For negotiation")}
+                                        </Text>
+                                        <Checkbox
+                                            status={
+                                                values.salaryUnspecified ? "checked" : "unchecked"
+                                            }
+                                            onPress={() => {
+                                                setFieldValue(
+                                                    "salaryUnspecified",
+                                                    !values.salaryUnspecified,
+                                                );
+                                            }}
+                                        />
+                                    </View>
+
+                                    <Divider bold={true} style={styles.separator} />
+                                    <Text variant="bodyMedium" style={styles.subtitle}>
+                                        {t("offerForm.contact", "Contact information")}
+                                    </Text>
+
+                                    {validationErrors.email && (
+                                        <HelperText type="error">
+                                            {validationErrors.email}
+                                        </HelperText>
+                                    )}
+                                    <TextInput
+                                        mode="outlined"
+                                        label={t("offerForm.emailLabel", "Email")}
+                                        value={values.email}
+                                        onChangeText={handleChange("email")}
+                                        onBlur={handleBlur("email")}
+                                        keyboardType="email-address"
+                                        autoCapitalize="none"
+                                        style={styles.input}
+                                        disabled={isSubmitting}
+                                    />
+
+                                    {validationErrors.companyName && (
+                                        <HelperText type="error">
+                                            {validationErrors.companyName}
+                                        </HelperText>
+                                    )}
+                                    <TextInput
+                                        mode="outlined"
+                                        label={t("offerForm.companyNameLabel", "Company name")}
+                                        value={values.companyName}
+                                        onChangeText={handleChange("companyName")}
+                                        onBlur={handleBlur("companyName")}
+                                        autoCapitalize="none"
+                                        style={styles.input}
+                                        disabled={isSubmitting}
+                                    />
+
+                                    <TextInput
+                                        mode="outlined"
+                                        label={t("offerForm.phoneLabel", "Phone number")}
+                                        value={values.phone}
+                                        onChangeText={(val) => {
+                                            const numericValue = val.replace(/[^0-9\-\+]/g, "");
+                                            setFieldValue("phone", numericValue);
+                                        }}
+                                        onBlur={handleBlur("phone")}
+                                        keyboardType="phone-pad"
+                                        style={styles.input}
+                                        disabled={isSubmitting}
+                                    />
+
+                                    <Button
+                                        mode="contained"
+                                        onPress={handleSubmit as any}
+                                        loading={isSubmitting}
+                                        disabled={isSubmitting}
+                                        style={styles.button}
+                                        contentStyle={styles.buttonContent}
                                     >
-                                        {t("offerForm.addTagButton", "Add")}
+                                        {creatingNewOffer
+                                            ? t("offerForm.createButton", "Create Offer")
+                                            : t("offerForm.saveButton", "Save Offer")}
                                     </Button>
                                 </View>
-
-                                <View style={styles.row}>
-                                    <Text
-                                        variant="bodyMedium"
-                                        style={{ color: theme.colors.onSurfaceVariant }}
-                                    >
-                                        {t("offerForm.salaryForNegotiation", "For negotiation")}
-                                    </Text>
-                                    <Checkbox
-                                        status={values.salaryUnspecified ? "checked" : "unchecked"}
-                                        onPress={() => {
-                                            setFieldValue(
-                                                "salaryUnspecified",
-                                                !values.salaryUnspecified,
-                                            );
-                                        }}
-                                    />
-                                </View>
-
-                                <Divider bold={true} style={styles.separator} />
-                                <Text variant="bodyMedium" style={styles.subtitle}>
-                                    {t("offerForm.contact", "Contact information")}
-                                </Text>
-
-                                {validationErrors.email && (
-                                    <HelperText type="error">{validationErrors.email}</HelperText>
-                                )}
-                                <TextInput
-                                    mode="outlined"
-                                    label={t("offerForm.emailLabel", "Email")}
-                                    value={values.email}
-                                    onChangeText={handleChange("email")}
-                                    onBlur={handleBlur("email")}
-                                    keyboardType="email-address"
-                                    autoCapitalize="none"
-                                    style={styles.input}
-                                    disabled={isSubmitting}
-                                />
-
-                                {validationErrors.companyName && (
-                                    <HelperText type="error">
-                                        {validationErrors.companyName}
-                                    </HelperText>
-                                )}
-                                <TextInput
-                                    mode="outlined"
-                                    label={t("offerForm.companyNameLabel", "Company name")}
-                                    value={values.companyName}
-                                    onChangeText={handleChange("companyName")}
-                                    onBlur={handleBlur("companyName")}
-                                    autoCapitalize="none"
-                                    style={styles.input}
-                                    disabled={isSubmitting}
-                                />
-
-                                <TextInput
-                                    mode="outlined"
-                                    label={t("offerForm.phoneLabel", "Phone number")}
-                                    value={values.phone}
-                                    onChangeText={(val) => {
-                                        const numericValue = val.replace(/[^0-9\-\+]/g, "");
-                                        setFieldValue("phone", numericValue);
-                                    }}
-                                    onBlur={handleBlur("phone")}
-                                    keyboardType="phone-pad"
-                                    style={styles.input}
-                                    disabled={isSubmitting}
-                                />
-
-                                <Button
-                                    mode="contained"
-                                    onPress={handleSubmit as any}
-                                    loading={isSubmitting}
-                                    disabled={isSubmitting}
-                                    style={styles.button}
-                                    contentStyle={styles.buttonContent}
-                                >
-                                    {creatingNewOffer
-                                        ? t("offerForm.createButton", "Create Offer")
-                                        : t("offerForm.saveButton", "Save Offer")}
-                                </Button>
-                            </View>
-                        )}
-                    </Formik>
-                </View>
-            </TouchableWithoutFeedback>
-        </ScrollView>
+                            )}
+                        </Formik>
+                    </View>
+                </TouchableWithoutFeedback>
+            </ScrollView>
+        </KeyboardAvoidingView>
     );
 }
 
 const createStyles = (theme: any) =>
     StyleSheet.create({
-        container: {
+        // 4. Added full screen requirements for keyboard avoiding view
+        keyboardAvoidingContainer: {
             flex: 1,
             backgroundColor: theme.colors.background,
+        },
+        container: {
+            flex: 1,
+        },
+        // 5. Ensures the TouchableWithoutFeedback container behaves appropriately inside ScrollView
+        scrollContent: {
+            flexGrow: 1,
         },
         innerContainer: {
             flex: 1,
             justifyContent: "center",
             paddingHorizontal: 24,
+            paddingBottom: 24, // Added slight padding to bottom when active
         },
         title: {
             fontWeight: "bold",

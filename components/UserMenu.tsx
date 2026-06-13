@@ -59,7 +59,13 @@ export const UserMenu = () => {
                         leadingIcon="plus"
                     />
                     <Menu.Item
-                        onPress={() => handleAction("/offers/my")}
+                        onPress={() => {
+                            closeMenu();
+                            router.push({
+                                pathname: "/",
+                                params: { userId: user?.uid },
+                            } as any);
+                        }}
                         title={t("menu.myOffers", "My offers")}
                         leadingIcon="format-list-bulleted"
                     />

@@ -10,8 +10,8 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { useTranslation } from "react-i18next";
 import {
     Keyboard,
-    KeyboardAvoidingView, // 1. Imported KeyboardAvoidingView
-    Platform, // 2. Imported Platform for platform-specific behavior
+    KeyboardAvoidingView,
+    Platform,
     ScrollView,
     StyleSheet,
     TouchableWithoutFeedback,
@@ -194,11 +194,10 @@ export default function OfferFormScreen() {
     }
 
     return (
-        // 3. Wrap entire tree with KeyboardAvoidingView to ensure layout pushes properly
         <KeyboardAvoidingView
             style={styles.keyboardAvoidingContainer}
             behavior={Platform.OS === "ios" ? "padding" : undefined}
-            keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0} // Adjusts height if using top stack headers
+            keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
         >
             <ScrollView
                 ref={scrollRef}
@@ -534,7 +533,6 @@ export default function OfferFormScreen() {
 
 const createStyles = (theme: any) =>
     StyleSheet.create({
-        // 4. Added full screen requirements for keyboard avoiding view
         keyboardAvoidingContainer: {
             flex: 1,
             backgroundColor: theme.colors.background,
@@ -542,7 +540,6 @@ const createStyles = (theme: any) =>
         container: {
             flex: 1,
         },
-        // 5. Ensures the TouchableWithoutFeedback container behaves appropriately inside ScrollView
         scrollContent: {
             flexGrow: 1,
         },
@@ -550,7 +547,7 @@ const createStyles = (theme: any) =>
             flex: 1,
             justifyContent: "center",
             paddingHorizontal: 24,
-            paddingBottom: 24, // Added slight padding to bottom when active
+            paddingBottom: 24,
         },
         title: {
             fontWeight: "bold",

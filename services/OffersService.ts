@@ -1,3 +1,4 @@
+import type { Location } from "@/models/Location";
 import {
     addDoc,
     collection,
@@ -5,7 +6,6 @@ import {
     doc,
     getDoc,
     getDocs,
-    limit,
     orderBy,
     query,
     QueryDocumentSnapshot,
@@ -40,6 +40,10 @@ const mapDocToOffer = (doc: QueryDocumentSnapshot): Offer => {
 export type GetOffersOptions = {
     userId?: string;
     remote?: boolean;
+    salaryUnspecified?: boolean;
+    salaryMin?: string;
+    salaryMax?: string;
+    location?: Location;
     tags?: string;
     maxResults?: number;
     sortBy?: "createdAt" | "salary" | "title";
@@ -67,21 +71,100 @@ class OffersService {
     }
 
     async getOffers(options?: GetOffersOptions): Promise<{ offer: Offer; id: string }[]> {
-        const constraints = [];
+        const constraints: any[] = [];
 
         if (options?.userId) constraints.push(where("userId", "==", options.userId));
-        if (options?.remote !== undefined) constraints.push(where("remote", "==", options.remote));
+        if (options?.remote === true) constraints.push(where("remote", "==", options.remote));
 
-        if (options?.tags) {
-            constraints.push(where("tags", ">=", options.tags));
-            constraints.push(where("tags", "<=", options.tags + "\uf8ff"));
+        const hasTagFilter = !!(options?.tags && options.tags.trim() !== "");
+        if (hasTagFilter) {
+            const searchTag = options!.tags!.trim();
+            constraints.push(where("tags", ">=", searchTag));
+            constraints.push(where("tags", "<=", searchTag + "\uf8ff"));
+            constraints.push(orderBy("tags"));
+        } else if (options?.sortBy) {
+            constraints.push(orderBy(options.sortBy, options.sortOrder || "asc"));
         }
 
-        constraints.push(orderBy(options?.sortBy || "createdAt", options?.sortOrder || "desc"));
-        if (options?.maxResults) constraints.push(limit(options?.maxResults));
-
         const snapshot = await getDocs(query(this.offersCollection, ...constraints));
-        return snapshot.docs.map((doc) => ({ offer: mapDocToOffer(doc), id: doc.id }));
+
+        let results = snapshot.docs.map((doc) => ({
+            offer: mapDocToOffer(doc),
+            id: doc.id,
+            createdAt: (doc.data() as any).createdAt || "",
+        }));
+
+        if (options?.location) {
+            const { country, region, city } = options.location;
+            results = results.filter(({ offer }) => {
+                if (country && offer.location?.country !== country) return false;
+                if (region && offer.location?.region !== region) return false;
+                if (city && offer.location?.city !== city) return false;
+                return true;
+            });
+        }
+
+        const hasSalaryMin = options?.salaryMin !== undefined;
+        const hasSalaryMax = options?.salaryMax !== undefined;
+
+        if (hasSalaryMin || hasSalaryMax || options?.salaryUnspecified !== undefined) {
+            let salaryMinNum = hasSalaryMin ? parseFloat(options!.salaryMin!) : undefined;
+            let salaryMaxNum = hasSalaryMax ? parseFloat(options!.salaryMax!) : undefined;
+
+            if (!hasSalaryMin) {
+                salaryMinNum =
+                    !options?.salaryUnspecified && options?.salaryUnspecified !== undefined ? 1 : 0;
+            }
+
+            results = results.filter(({ offer }) => {
+                const offerSalary =
+                    typeof offer.salary === "string" ? parseFloat(offer.salary) : offer.salary;
+
+                // If document doesn't have a valid salary
+                if (
+                    offerSalary === undefined ||
+                    offerSalary === null ||
+                    Number.isNaN(offerSalary)
+                ) {
+                    return options?.salaryUnspecified === true;
+                }
+
+                if (salaryMinNum !== undefined && offerSalary < salaryMinNum) return false;
+                if (salaryMaxNum !== undefined && offerSalary > salaryMaxNum) return false;
+                return true;
+            });
+        }
+
+        if (options?.sortBy) {
+            const sortBy = options.sortBy;
+            const isDesc = options.sortOrder === "desc";
+
+            results.sort((a, b) => {
+                let valA: any;
+                let valB: any;
+
+                if (sortBy === "createdAt") {
+                    valA = a.createdAt;
+                    valB = b.createdAt;
+                } else {
+                    valA = a.offer[sortBy];
+                    valB = b.offer[sortBy];
+                }
+
+                if (typeof valA === "string") valA = valA.toLowerCase();
+                if (typeof valB === "string") valB = valB.toLowerCase();
+
+                if (valA < valB) return isDesc ? 1 : -1;
+                if (valA > valB) return isDesc ? -1 : 1;
+                return 0;
+            });
+        }
+
+        if (options?.maxResults) {
+            results = results.slice(0, options.maxResults);
+        }
+
+        return results.map(({ offer, id }) => ({ offer, id }));
     }
 
     async editOffer(offerId: string, updatedData: EditOfferData): Promise<void> {

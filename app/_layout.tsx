@@ -30,6 +30,10 @@ export default function RootLayout() {
                 <Stack.Screen name="register" options={{ headerShown: true }} />
                 <Stack.Screen name="offer-details" options={{ headerShown: true }} />
                 <Stack.Screen name="offer-form" options={{ headerShown: true }} />
+                <Stack.Screen
+                    name="offer-filter"
+                    options={{ headerShown: true, presentation: "modal" }}
+                />
             </Stack>
             <StatusBar style={isDark ? "light" : "dark"} />
         </PaperProvider>

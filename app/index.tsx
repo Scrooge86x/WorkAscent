@@ -1,14 +1,15 @@
 import ErrorPopup from "@/components/ErrorPopup";
 import { OfferItem } from "@/components/OfferItem";
+import { compactParams, parseSearchBoolean, parseSearchParam } from "@/hooks/search-params-helpers";
 import { useAppTranslation } from "@/hooks/use-app-translation";
 import { Offer } from "@/models/Offer";
-import { offersService } from "@/services/OffersService";
+import { GetOffersOptions, offersService } from "@/services/OffersService";
 import { FlashList } from "@shopify/flash-list";
 import * as Network from "expo-network";
-import { Stack } from "expo-router";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { StyleSheet, View } from "react-native";
-import { ActivityIndicator, Text, useTheme } from "react-native-paper";
+import { ActivityIndicator, Appbar, Text, useTheme } from "react-native-paper";
 
 export default function HomeScreen() {
     const theme = useTheme();
@@ -17,35 +18,109 @@ export default function HomeScreen() {
     const [offers, setOffers] = useState<{ offer: Offer; id: string }[]>([]);
     const [refreshing, setRefreshing] = useState(true);
     const styles = useMemo(() => createStyles(theme), [theme]);
+    const router = useRouter();
 
     const [error, setError] = useState<string | null>(null);
+    const params = useLocalSearchParams<any>();
 
-    // TODO: Filtracja, sortowanie
-    const fetchOffers = useCallback(async () => {
-        setRefreshing(true);
-        const networkStatus = await Network.getNetworkStateAsync();
+    const routeOfferOptions = useMemo(() => {
+        const city = parseSearchParam(params.city);
+        const region = parseSearchParam(params.region);
+        const country = parseSearchParam(params.country);
 
-        if (!networkStatus.isConnected) {
-            setError(t("noConnection", "No internet connection"));
-            setRefreshing(false);
-            return;
-        }
+        return {
+            userId: parseSearchParam(params.userId),
+            remote: parseSearchBoolean(params.remote),
+            salaryUnspecified: parseSearchBoolean(params.salaryUnspecified),
+            tags: parseSearchParam(params.tags),
+            salaryMin: parseSearchParam(params.salaryMin),
+            salaryMax: parseSearchParam(params.salaryMax),
+            location:
+                city || region || country
+                    ? {
+                          city: city || "",
+                          region: region || "",
+                          country: country || "",
+                      }
+                    : undefined,
+            sortBy: parseSearchParam(params.sortBy) as GetOffersOptions["sortBy"] | undefined,
+            sortOrder: parseSearchParam(params.sortOrder) as
+                | GetOffersOptions["sortOrder"]
+                | undefined,
+        };
+    }, [
+        params.city,
+        params.country,
+        params.region,
+        params.sortBy,
+        params.sortOrder,
+        params.tags,
+        params.userId,
+        params.remote,
+        params.salaryUnspecified,
+        params.salaryMin,
+        params.salaryMax,
+    ]);
 
-        try {
-            const offers = await offersService.getOffers();
-            setOffers(offers);
-            setError(null);
-        } catch (error) {
-            setOffers([]);
-            setError(t("home.fetchError", "Failed to fetch offers"));
-        } finally {
-            setRefreshing(false);
-        }
-    }, [offers]);
+    const currentFilterParams = useMemo(
+        () =>
+            compactParams({
+                title: parseSearchParam(params.title),
+                city: parseSearchParam(params.city),
+                region: parseSearchParam(params.region),
+                country: parseSearchParam(params.country),
+                tags: parseSearchParam(params.tags),
+                salaryMin: parseSearchParam(params.salaryMin),
+                salaryMax: parseSearchParam(params.salaryMax),
+                sortBy: parseSearchParam(params.sortBy),
+                sortOrder: parseSearchParam(params.sortOrder),
+                remote: parseSearchParam(params.remote),
+                salaryUnspecified: parseSearchParam(params.salaryUnspecified),
+            }),
+        [
+            params.city,
+            params.country,
+            params.region,
+            params.sortBy,
+            params.sortOrder,
+            params.tags,
+            params.title,
+            params.remote,
+            params.salaryUnspecified,
+            params.salaryMin,
+            params.salaryMax,
+        ],
+    );
+
+    const fetchOffers = useCallback(
+        async (options?: GetOffersOptions) => {
+            setRefreshing(true);
+            const networkStatus = await Network.getNetworkStateAsync();
+
+            if (!networkStatus.isConnected) {
+                setError(t("noConnection", "No internet connection"));
+                setRefreshing(false);
+                return;
+            }
+
+            try {
+                const offers = await offersService.getOffers(options);
+                setOffers(offers);
+                setError(null);
+            } catch (error) {
+                console.log(error);
+                setOffers([]);
+                setError(t("home.fetchError", "Failed to fetch offers"));
+            } finally {
+                setRefreshing(false);
+            }
+        },
+        [t],
+    );
 
     useEffect(() => {
-        fetchOffers();
-    }, []);
+        fetchOffers(routeOfferOptions);
+    }, [routeOfferOptions, fetchOffers]);
 
     if (refreshing && offers.length === 0) {
         return (
@@ -57,7 +132,22 @@ export default function HomeScreen() {
 
     return (
         <View style={styles.container}>
-            <Stack.Screen />
+            <Stack.Screen
+                options={{
+                    headerLeft: () => (
+                        <Appbar.Action
+                            icon="filter-outline"
+                            onPress={() =>
+                                router.push({
+                                    pathname: "/offer-filter",
+                                    params: currentFilterParams,
+                                })
+                            }
+                            accessibilityLabel="Open filter"
+                        />
+                    ),
+                }}
+            />
             <ErrorPopup message={error} />
             <Text variant="bodyMedium" style={styles.subtitleInfo}>
                 {`${t("home.found", "Found")} ${offers.length} ${t("home.offers", "offers matching your criteria:")}`}
@@ -73,7 +163,7 @@ export default function HomeScreen() {
                         renderItem={({ item }) => <OfferItem item={item.offer} id={item.id} />}
                         keyExtractor={(item) => item.id}
                         refreshing={refreshing}
-                        onRefresh={fetchOffers}
+                        onRefresh={() => fetchOffers(routeOfferOptions)}
                     />
                 )}
             </View>

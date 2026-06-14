@@ -9,7 +9,8 @@
             "salaryRequired": "Salary needs to be greater than 0 unless marked as for negotiation",
             "emailRequired": "Email is required",
             "emailInvalid": "Email is invalid",
-            "companyNameRequired": "Company name is required"
+            "companyNameRequired": "Company name is required",
+            "salaryRange": "Maximum salary must be greater than minimum salary"
         },
         "validationError": "Please fix validation errors before submitting",
         "saveError": "Failed to save offer",
@@ -35,6 +36,19 @@
         "companyNameLabel": "Company name",
         "phoneLabel": "Phone number",
         "createButton": "Create Offer",
-        "saveButton": "Save Offer"
+        "saveButton": "Save Offer",
+        "criteria": "Search Criteria",
+        "onlyRemote": "Show only remote offers",
+        "salaryLabelFrom": "Salary from (PLN)",
+        "salaryLabelTo": "Salary to (PLN)",
+        "allowSalaryForNegotiation": "Allow unspecified salary",
+        "sortByTitle": "Sort By",
+        "creationDate": "Creation date",
+        "salary": "Salary",
+        "titleSort": "Title",
+        "ascending": "Ascending",
+        "descending": "Descending",
+        "resetFiltersButton": "Reset filters",
+        "searchButton": "Search"
     }
 }

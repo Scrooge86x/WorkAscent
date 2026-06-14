@@ -9,7 +9,8 @@
             "salaryRequired": "Wynagrodzenie musi być większe od 0, chyba że oznaczone jako do negocjacji",
             "emailRequired": "Email jest wymagany",
             "emailInvalid": "Email jest nieprawidłowy",
-            "companyNameRequired": "Nazwa firmy jest wymagana"
+            "companyNameRequired": "Nazwa firmy jest wymagana",
+            "salaryRange": "Maksymalne wynagrodzenie musi być większe od minimalnego"
         },
         "validationError": "Proszę poprawić błędy walidacji przed wysłaniem",
         "saveError": "Nie udało się zapisać oferty",
@@ -35,6 +36,19 @@
         "companyNameLabel": "Nazwa firmy",
         "phoneLabel": "Numer telefonu",
         "createButton": "Utwórz ofertę",
-        "saveButton": "Zapisz ofertę"
+        "saveButton": "Zapisz ofertę",
+        "criteria": "Kryteria wyszukiwania",
+        "onlyRemote": "Pokaż tylko oferty zdalne",
+        "salaryLabelFrom": "Wynagrodzenie od (PLN)",
+        "salaryLabelTo": "Wynagrodzenie do (PLN)",
+        "allowSalaryForNegotiation": "Pozwól na nieokreślone wynagrodzenie",
+        "sortByTitle": "Sortuj według",
+        "creationDate": "Data utworzenia",
+        "salary": "Wynagrodzenie",
+        "titleSort": "Tytuł",
+        "ascending": "Rosnąco",
+        "descending": "Malejąco",
+        "resetFiltersButton": "Resetuj filtry",
+        "searchButton": "Szukaj"
     }
 }
